@@ -39,7 +39,7 @@ CREATE TABLE admins (
     adminid INTEGER,
     adminname VARCHAR(32),
     adminpwd VARCHAR(32) not null,
-    employeename VARCHAR(32) not null
+    employeename VARCHAR(32) not null,
     primary key(adminid, adminname)
 );
 
