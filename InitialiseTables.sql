@@ -14,7 +14,7 @@ CREATE TABLE users (
 
 -- Rides
 CREATE TABLE rides (
-    rideid INTEGER primary key,
+    rideid INTEGER unique primary key,
     dates DATE not null,
     times TIME not null,
     origin VARCHAR(32) not null,
@@ -27,17 +27,16 @@ CREATE TABLE rides (
 
 -- Cars
 CREATE TABLE cars (
-    carid INTEGER,
+    carid INTEGER unique,
     licensePlate VARCHAR(8),
     carType VARCHAR(32) not null,
-    primary key(carid, licensePlate),
-    check(licensePlate like '[A-Z][A-Z][A-Z][0-9][0-9][0-9][0-9][A-Z]')
+    primary key(carid, licensePlate)
 );
 
 -- Admins
 CREATE TABLE admins (
-    adminid INTEGER,
-    adminname VARCHAR(32),
+    adminid INTEGER unique,
+    adminname VARCHAR(32) unique,
     adminpwd VARCHAR(32) not null,
     employeename VARCHAR(32) not null,
     primary key(adminid, adminname)
@@ -45,35 +44,49 @@ CREATE TABLE admins (
 
 -- User owns cars
 CREATE TABLE owns (
-    userid INTEGER,
-    carid INTEGER,
-    primary key(userid, carid)
+    usersid INTEGER,
+    carsid INTEGER,
+    primary key(usersid, carsid),
+    foreign key(usersid) references users(userid)
+        on DELETE CASCADE,
+    foreign key(carsid) references cars(carid)
+        on DELETE CASCADE
 );
 
 -- User drives rides
 CREATE TABLE drives (
-    userid INTEGER,
-    dates DATE,
-    times TIME,
-    rideid INTEGER unique not null,
-    carid INTEGER not null,
-    primary key(userid, dates, times)
+    usersid INTEGER,
+    ridesid INTEGER unique not null,
+    carsid INTEGER not null,
+    primary key(usersid, ridesid),
+    foreign key(usersid) references users(userid)
+        on DELETE CASCADE,
+    foreign key(ridesid) references rides(rideid)
+        on DELETE CASCADE,
+    foreign key(carsid) references cars(carid)
+        on DELETE CASCADE
 );
 
 -- User bids for rides
 CREATE TABLE bids (
-    userid INTEGER,
-    rideid INTEGER,
+    usersid INTEGER,
+    ridesid INTEGER,
     price INTEGER not null,
     status VARCHAR(1) not null,
     sidenote TEXT,
-    primary key(userid, rideid)
+    primary key(usersid, ridesid),
+    foreign key(usersid) references users(userid)
+        on DELETE CASCADE,
+    foreign key(ridesid) references rides(rideid)
+        on DELETE CASCADE
 );
 
 -- Administrator manages entities
 CREATE TABLE manages (
-    adminid INTEGER not null,
+    adminsid INTEGER not null,
     managetype VARCHAR(6) not null,
     typeid INTEGER not null,
-    history VARCHAR(32) not null
+    history VARCHAR(32) not null,
+    foreign key(adminsid) references admins(adminid)
+        on DELETE CASCADE
 );
