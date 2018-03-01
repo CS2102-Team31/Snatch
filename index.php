@@ -11,14 +11,26 @@
 </head>
 
 <body>
+    
+    
     <h1>Login</h1>
-    <form>
+    <form name="loginForm" action="index.php" method="POST">
         UserID:<br>
-        <input type="text" name="userID"><br>
+        <input type="text" name="userID" value = "234567891"><br> //change the uid for different profile
         Password:<br>
         <input type="password" name="password"><br>
-        <input type="submit" value="Login"><br>
+        <input type="submit" value="Login" name="login"><br>
     </form>
+    
+    
+     <?php
+    if (isset($_POST['login'])){
+        session_start();
+        $_SESSION['userID'] = $_POST[userID];
+        echo "this is". $_SESSION['userID'];
+         header("location: profile.php");
+        }
+    ?>
 
     <!-- Refer to this on how to make a form to insert entries -->
     <h1>Register</h1>
@@ -45,14 +57,12 @@
     
     <?php
     $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=**********");
-
     // damn annoying because all fields must be fields
     if (isset($_POST['registerUser'])){
         $uniqueId = uniqid();;
         $result = pg_query($db, "INSERT INTO users (email, userid, username, pwd, phone, bday, driverLicense)
                                       VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', '$_POST[birthday]', '$_POST[driver_license]')
                                 ");
-
         if (!$result) {
             $failedresult = pg_send_query($db,  "INSERT INTO users (email, userid, username, pwd, phone, bday, driverLicense)
                                                       VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', '$_POST[birthday]', '$_POST[driver_license]')
@@ -79,7 +89,6 @@
     $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=T0mat0r0ck5");	
     $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");		// Query template
     $row    = pg_fetch_assoc($result);		// To store the result row
-
     if (isset($_POST['submitUser'])) {
         echo "
         <form>
