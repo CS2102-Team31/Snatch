@@ -1,7 +1,16 @@
+DROP TABLE owns;
+DROP TABLE drives;
+DROP TABLE bids;
+DROP TABLE manages;
+DROP TABLE users;
+DROP TABLE rides;
+DROP TABLE cars;
+DROP TABLE admins;
+
 -- Users
 CREATE TABLE users (
     email VARCHAR(32),
-    userid INTEGER,
+    userid VARCHAR(100) unique,
     username VARCHAR(32) unique not null,
     pwd VARCHAR(32) not null,
     phone numeric(8, 0) not null,
@@ -14,7 +23,7 @@ CREATE TABLE users (
 
 -- Rides
 CREATE TABLE rides (
-    rideid INTEGER unique primary key,
+    rideid VARCHAR(100) unique primary key,
     dates DATE not null,
     times TIME not null,
     origin VARCHAR(32) not null,
@@ -27,7 +36,7 @@ CREATE TABLE rides (
 
 -- Cars
 CREATE TABLE cars (
-    carid INTEGER unique,
+    carid VARCHAR(100) unique,
     licensePlate VARCHAR(8),
     carType VARCHAR(32) not null,
     primary key(carid, licensePlate)
@@ -35,7 +44,7 @@ CREATE TABLE cars (
 
 -- Admins
 CREATE TABLE admins (
-    adminid INTEGER unique,
+    adminid VARCHAR(100) unique,
     adminname VARCHAR(32) unique,
     adminpwd VARCHAR(32) not null,
     employeename VARCHAR(32) not null,
@@ -44,8 +53,8 @@ CREATE TABLE admins (
 
 -- User owns cars
 CREATE TABLE owns (
-    usersid INTEGER,
-    carsid INTEGER,
+    usersid VARCHAR(100),
+    carsid VARCHAR(100),
     primary key(usersid, carsid),
     foreign key(usersid) references users(userid)
         on DELETE CASCADE,
@@ -55,9 +64,9 @@ CREATE TABLE owns (
 
 -- User drives rides
 CREATE TABLE drives (
-    usersid INTEGER,
-    ridesid INTEGER unique not null,
-    carsid INTEGER not null,
+    usersid VARCHAR(100),
+    ridesid VARCHAR(100) unique not null,
+    carsid VARCHAR(100) not null,
     primary key(usersid, ridesid),
     foreign key(usersid) references users(userid)
         on DELETE CASCADE,
@@ -69,8 +78,8 @@ CREATE TABLE drives (
 
 -- User bids for rides
 CREATE TABLE bids (
-    usersid INTEGER,
-    ridesid INTEGER,
+    usersid VARCHAR(100),
+    ridesid VARCHAR(100),
     price INTEGER not null,
     status VARCHAR(1) not null,
     sidenote TEXT,
@@ -83,9 +92,9 @@ CREATE TABLE bids (
 
 -- Administrator manages entities
 CREATE TABLE manages (
-    adminsid INTEGER not null,
+    adminsid VARCHAR(100) not null,
     managetype VARCHAR(6) not null,
-    typeid INTEGER not null,
+    typeid VARCHAR(100) not null,
     history VARCHAR(32) not null,
     foreign key(adminsid) references admins(adminid)
         on DELETE CASCADE
