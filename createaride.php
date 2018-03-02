@@ -30,7 +30,10 @@
   </ul>
   <?php
   	// Connect to the database. Please change the password in the following line accordingly
+    session()_start();
+    $userid = $_SESSION['user'
     $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+
     if (isset($_POST['CreateARide'])) {
         $rideid = uniqid('ride');
         $_POST[sidenote] = !empty($_POST[sidenote]) ? "'$_POST[sidenote]'" : "null";
@@ -39,9 +42,9 @@
             $failedresult = pg_send_query($db, "INSERT INTO rides values('$rideid', '$_POST[dates]', '$_POST[times]', '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]', '$_POST[biddingType]', $_POST[sidenote])");
 
             echo pg_result_error(pg_get_result($db));
-            echo "Created failed!!";
+            echo "Creating ride failed!!";
         } else {
-            echo "Created ride successful!";
+            echo "Created ride successfully!";
         }
     }
 
