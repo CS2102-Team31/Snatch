@@ -66,7 +66,7 @@
         echo "<ul><form name='update' action='profile.php' method='POST' >  
     	<strong>Name: </strong> <input type='text' name='name_updated' value='$row[username]'/> </br>
         <strong>Gender: </strong> <input type='text' name='gender_updated' value='$row[gender]'/></br>
-        <strong>Date of Birth: </strong> <input type='text' name='bday_updated' value='$row[bday]'/></br>
+        <strong>Date of Birth: </strong> <input type='date' name='bday_updated' value='$row[bday]'/></br>
         <strong>Driver Licence Number: </strong> <input type='text' name='dl_updated' value='$row[driverlicense]'/></br>
         <strong>Email: </strong> <input type='text' name='email_updated' value='$row[email]'/></br>
         <strong>Phone: </strong> <input type='text' name='phone_updated' value='$row[phone]'/></br>
@@ -76,7 +76,9 @@
     
          if (isset($_POST['new'])) {	// Submit the update SQL command
             $result = pg_query($db, "UPDATE users SET username = '$_POST[name_updated]',
-            gender = '$_POST[gender_updated]' WHERE userid = '$userID '");
+            gender = '$_POST[gender_updated]', bday = '$_POST[bday_updated]',
+            driverLicense = '$_POST[dl_updated]', email = '$_POST[email_updated]',
+            phone = '$_POST[phone_updated]' WHERE userid = '$userID'");
             if (!$result) {
                 echo "Update failed!!";
             } else {
@@ -149,7 +151,7 @@
         
     </div>
 
-  <button type="button"><a href="bookaride.php" style="text-decoration:none;">Book A Ride!</button>
+  <button type="button"><a href="bid.php" style="text-decoration:none;">Book A Ride!</button>
   <button type="button" ><a href="createaride.php" style="text-decoration:none;">Create A Ride!</button>
 </body>
 </html>
