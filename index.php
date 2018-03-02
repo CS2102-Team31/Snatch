@@ -21,9 +21,9 @@
         <input type="password" name="password"><br>
         <input type="submit" value="Login" name="login"><br>
     </form>
-
-
-    <?php
+    
+    
+     <?php
     if (isset($_POST['login'])){
         $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
         $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");
@@ -41,6 +41,7 @@
             }
         }
     }
+
     ?>
 
     <!-- Refer to this on how to make a form to insert entries -->
@@ -67,7 +68,7 @@
     </form>
     
     <?php
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=**********");
+    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
     // damn annoying because all fields must be fields
     if (isset($_POST['registerUser'])){
         $uniqueId = uniqid();;
@@ -97,7 +98,7 @@
     
     <?php
     // This is the db to connect to
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=T0mat0r0ck5");	
+    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
     $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");		// Query template
     $row    = pg_fetch_assoc($result);		// To store the result row
     if (isset($_POST['submitUser'])) {

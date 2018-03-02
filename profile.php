@@ -97,7 +97,7 @@
   	// Connect to the database. Please change the password in the following line accordingly
     session_start();
     $userID = $_SESSION['userID'];
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=*********");	
+    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
     $result = pg_query($db, "select * from cars where exists ( Select 1 from (SELECT carsid FROM owns where usersid = '$userID' ) as R where R.carsid = cars.carid);");
     $numcar = 1; 
     $cars = array();
