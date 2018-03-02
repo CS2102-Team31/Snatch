@@ -46,7 +46,7 @@
   	// Connect to the database. Please change the password in the following line accordingly
     session_start();
     $userID = $_SESSION['userID'];
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=*******");	
+    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
     $result = pg_query($db, "SELECT * FROM users where userid = '$userID'");		// need to replace the uid accordingly
     $row    = pg_fetch_assoc($result);		// To store the result row
         echo '<h1> Hello '.$row[username].'!</h1> 
@@ -150,6 +150,6 @@
     </div>
 
   <button type="button"><a href="bookaride.php" style="text-decoration:none;">Book A Ride!</button>
-  <button type="button" ><a href="bookaride.php" style="text-decoration:none;">Create A Ride!</button>
+  <button type="button" ><a href="createaride.php" style="text-decoration:none;">Create A Ride!</button>
 </body>
 </html>
