@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <head>
   <title>Create A Ride</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -8,9 +8,10 @@
 
   <?php
     // Connect to the database. Please change the password in the following line accordingly
+    include 'phpconfig.php';
     session_start();
     $userid = $_SESSION['userID'];
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+    $db     = $psql;
     $username = pg_fetch_assoc(pg_query($db, "SELECT * FROM users where userid = '$userid'"))[username];
     $result = pg_query($db, "SELECT * FROM rides where exists (SELECT 1 FROM (SELECT ridesid FROM drives where usersid = '$userid') as R where R.ridesid = rides.rideid);");
     echo '<h1>' .$username. '\'s Rides</h1>';
@@ -127,9 +128,10 @@
   </ul>
   <?php
   	// Connect to the database. Please change the password in the following line accordingly
+    include 'phpconfig.php';
     session_start();
     $userid = $_SESSION['userID'];
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+    $db     = $psql;
     if (isset($_POST['CreateARide'])) {
         $rideid = uniqid('ride');
         $_POST[sidenote] = !empty($_POST[sidenote]) ? "'$_POST[sidenote]'" : "null";

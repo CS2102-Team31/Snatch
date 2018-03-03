@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    
-    
+
+
     <h1>Login</h1>
     <form name="loginForm" action="index.php" method="POST">
         Username:<br>
@@ -21,11 +21,14 @@
         <input type="password" name="password"><br>
         <input type="submit" value="Login" name="login"><br>
     </form>
-    
-    
+
+
      <?php
+include 'phpconfig.php';
+
     if (isset($_POST['login'])){
-        $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+
+      $db     = $psql;
         $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");
         $row = pg_fetch_assoc($result);
         if ($row[userid] == "") {
@@ -62,13 +65,14 @@
         <input type="radio" name="gender" value="None" checked> <br>
         Birthday<br>
         <input type="text" name="birthday"> YYYY-MM-DD<br>
-        Driver License<br>        
-        <input type="text" name="driver_license"> 9 digits<br>        
+        Driver License<br>
+        <input type="text" name="driver_license"> 9 digits<br>
         <input type="submit" value="Register" name="registerUser"><br>
     </form>
-    
+
     <?php
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+    include 'phpconfig.php';
+    $db     = $psql;
     // damn annoying because all fields must be fields
     if (isset($_POST['registerUser'])){
         $uniqueId = uniqid();;
@@ -95,10 +99,11 @@
         <input type="text" name="username"><br>
         <input type="submit" value="Display User" name="submitUser"><br>
     </form>
-    
+
     <?php
     // This is the db to connect to
-    $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+    include 'phpconfig.php';
+    $db     = $psql;
     $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");		// Query template
     $row    = pg_fetch_assoc($result);		// To store the result row
     if (isset($_POST['submitUser'])) {
@@ -116,20 +121,20 @@
         <input type='text' name='userID' value='$row[userid]'><br>
         Password:<br>
         <input type='password' name='password' value='$row[pwd]'><br>
-        Driver License:<br>        
+        Driver License:<br>
         <input type='text' name='driver_license' value='$row[driverlicense]'><br>
         </form>
         ";
     }
-    
+
     ?>
-   
 
 
 
-    
 
- 
+
+
+
 </body>
 
 </html>

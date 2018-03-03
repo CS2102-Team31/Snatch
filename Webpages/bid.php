@@ -10,7 +10,8 @@
 
   <?php
   // Connect to the database. Please change the password in the following line accordingly
-  $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+  include 'phpconfig.php';
+  $db     = $psql;
   $result = pg_query($db, "with bidcount as (
   SELECT ridesid, status, min(price) as minprice, count(*) as numbids
   FROM bids
@@ -66,7 +67,8 @@
       <option value="">--- Select Ride ID ---</option>
       <?php
       // This is the db to connect to
-      $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+      include 'phpconfig.php';
+      $db     = $psql;
       $result = pg_query($db, "SELECT rideid FROM rides");		// Query template
 
       while ($row = pg_fetch_array($result)) {
@@ -79,7 +81,8 @@
 
   <?php
   // This is the db to connect to
-  $db     = pg_connect("host=localhost port=5432 dbname=Project1 user=postgres password=A0158271A");
+  include 'phpconfig.php';
+  $db     = $psql;
   $result = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");		// Query template
   $row    = pg_fetch_assoc($result);		// To store the result row
 
