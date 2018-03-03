@@ -4,27 +4,43 @@
     <title>UPDATE PostgreSQL data with PHP</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
+        .error {
+            color: #FF0000;
+        }
+
         li {
             list-style: none;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 </head>
 
 <body>
 
+    <div class="container-fluid">
 
     <h1>Login</h1>
     <form name="loginForm" action="index.php" method="POST">
-        Username:<br>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter username" name="username" value="Yilun">
+        <small id="usernameHelp" class="form-text text-muted">This is some descriptive text. Just type your username.</small>
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" aria-describedby="passwordHelp" placeholder="Enter password" name="password">
+        <small id="passwordHelp" class="form-text text-muted">Hint: 234567</small>
+
+        <!--Username:<br>
         <input type="text" name="username" value = "Yilun"><br> //change the uid for different profile
         Password:<br>
-        <input type="password" name="password"><br>
-        <input type="submit" value="Login" name="login"><br>
+        <input type="password" name="password"><br>-->
+        <br>
+        <input type="submit" class="btn btn-primary" value="Login" name="login"><br>
+    </div>
     </form>
 
 
      <?php
-include 'phpconfig.php';
+    include 'phpconfig.php';
 
     if (isset($_POST['login'])){
 
@@ -49,20 +65,20 @@ include 'phpconfig.php';
 
     <!-- Refer to this on how to make a form to insert entries -->
     <h1>Register</h1>
-    <p>Fill ALL fields (current alpha limitations)</p>
+    <p><span class="error">* required field</span></p>
     <form name="registerForm" action="index.php" method="POST">
-        Email* <br>
+        Email<span class="error">*</span> <br>
         <input type="text" name="email"> mailname@service.com<br>
-        User Name*<br>
+        User Name<span class="error">*</span> <br>
         <input type="text" name="name"><br>
-        Password*<br>
+        Password<span class="error">*</span> <br>
         <input type="password" name="password"><br>
-        Phone*<br>
+        Phone<span class="error">*</span> <br>
         <input type="text" name="phone"> 8 digits<br>
         Gender<br>
-        <input type="radio" name="gender" value="Male"> Male
-        <input type="radio" name="gender" value="Female"> Female
-        <input type="radio" name="gender" value="None" checked> <br>
+        <input type="radio" name="gender" value="Male">Male
+        <input type="radio" name="gender" value="Female">Female
+        <input type="radio" name="gender" value="None" checked ><br>
         Birthday<br>
         <input type="text" name="birthday"> YYYY-MM-DD<br>
         Driver License<br>
@@ -71,23 +87,33 @@ include 'phpconfig.php';
     </form>
 
     <?php
+
     include 'phpconfig.php';
     $db     = $psql;
     // damn annoying because all fields must be fields
     if (isset($_POST['registerUser'])){
-        $uniqueId = uniqid();;
-        $result = pg_query($db, "INSERT INTO users (email, userid, username, pwd, phone, bday, driverLicense)
-                                      VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', '$_POST[birthday]', '$_POST[driver_license]')
+        /*echo "You have selected :".$_POST['gender'];
+        echo "<br>"; 
+        $gender = ($_POST[gender] == "None") ? "null" : "'$_POST[gender]'";
+        echo $gender;
+        echo "<br>";*/ 
+        $gender = ($_POST[gender] == "None") ? "null" : "'$_POST[gender]'";
+        $uniqueId = uniqid();
+        $_POST[birthday] = !empty($_POST[birthday]) ? "'$_POST[birthday]'" : "null";
+        $_POST[driver_license] = !empty($_POST[driver_license]) ? "'$_POST[driver_license]'" : "null";
+
+        $result = pg_query($db, "INSERT INTO users (email, userid, username, pwd, phone, gender, bday, driverLicense)
+                                      VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
                                 ");
         if (!$result) {
-            $failedresult = pg_send_query($db,  "INSERT INTO users (email, userid, username, pwd, phone, bday, driverLicense)
-                                                      VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', '$_POST[birthday]', '$_POST[driver_license]')
+            $failedresult = pg_send_query($db,  "INSERT INTO users (email, userid, username, pwd, phone, gender, bday, driverLicense)
+                                                      VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
                                             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
-            echo "Insert failed!";
+            echo "Registration failed!";
         } else {
-            echo "Insert successful!";
+            echo "Registration successful!";
         }
     }
     ?>
@@ -132,7 +158,7 @@ include 'phpconfig.php';
 
 
 
-
+    </div>
 
 
 </body>
