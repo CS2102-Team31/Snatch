@@ -10,7 +10,10 @@
 
   <?php
   // Connect to the database. Please change the password in the following line accordingly
+
   include 'phpconfig.php';
+  session_start();
+  $userID = $_SESSION['userID'];
   $db     = $psql;
   $result = pg_query($db, "with bidcount as (
   SELECT ridesid, status, min(price) as minprice, count(*) as numbids
@@ -71,6 +74,7 @@
       $db     = $psql;
       $result = pg_query($db, "SELECT rideid FROM rides");		// Query template
 
+
       while ($row = pg_fetch_array($result)) {
         echo "<option value='" . $row['rideid'] ."'>" . $row['rideid'] ."</option>";
       }
@@ -83,10 +87,13 @@
   // This is the db to connect to
   include 'phpconfig.php';
   $db     = $psql;
+  session_start();
+  $userid = $_SESSION['userID'];
   $result = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");		// Query template
   $row    = pg_fetch_assoc($result);		// To store the result row
 
   if (isset($_POST['submitRideId'])) { // User will have to key in userID for now. Will get UserID from login in the future.
+
     echo "
     <form name='bid' method='POST'>
     RideID:<br>
@@ -100,7 +107,7 @@
     Your bid:<br>
     <input type='text' name='bid' value='--Enter your bid--'><br>
     UserID:<br>
-    <input type='text' name='userid' value='--Enter your ID--'><br>
+    <input type='text' name='userid' value='$userID'><br>
     <input type='submit' name='new'><br>
     </form>
     ";
