@@ -18,7 +18,7 @@
 <body>
 
     <nav class="navbar navbar-dark" style="background-color: coral;">
-    <a class="navbar-brand mx-auto" href="#">
+    <a class="navbar-brand mx-auto" href="index.php">
         Snatch
     </a>
     </nav>
@@ -33,11 +33,11 @@
                 <form name="loginForm" action="index.php" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter username" name="username" value="Yilun">
+                    <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter username" name="username">
                     <small id="usernameHelp" class="form-text text-muted">This is some descriptive text. Just type your username.</small>
                     <label for="password">Password</label>
                     <input type="password" class="form-control" id="password" aria-describedby="passwordHelp" placeholder="Enter password" name="password">
-                    <small id="passwordHelp" class="form-text text-muted">Hint: 234567</small>
+                    <small id="passwordHelp" class="form-text text-muted">Hint: Yilun 234567</small>
 
                     <!--Username:<br>
                     <input type="text" name="username" value = "Yilun"><br> //change the uid for different profile
@@ -123,8 +123,7 @@
 
                         <div>
                         <label for="birthday">Birthday</label>
-                        <input type="text" class="form-control" id="birthday" aria-describedby="birthdayHelp" placeholder="Enter birthday YYYY-MM-DD" name="birthday"> 
-                        <small id="birthdayHelp" class="form-text text-muted">YYYY-MM-DD</small>  
+                        <input type="date" class="form-control" id="birthday" aria-describedby="birthdayHelp" placeholder="Enter birthday YYYY-MM-DD" name="birthday">
                         </div>
 
                         <label for="driver_license">Diver License</label>
