@@ -2,46 +2,31 @@
 <head>
   <title>Profile</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <style>
-
-      li {list-style: none;}
-      body {background-color: coral;}
-      h1 {
-          font-family: Impact;
-      }
-     .left-div{
-          display: inline-block;
-          width: 500px;
-          text-align: left;
-          padding: 30px;
-          background-color: #FFFFFF;
-          border-radius: 3px;
-          margin: 15px;
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+   <style>
+      div {
           vertical-align: top;
           font-size: 1.2em;
-          line-height: 1.8em;
+          width: 50%;
+          margin: auto;
+          padding: 10px;
         }
-
-      .right-div
-        {
-          display: inline-block;
-          width: 500px;
-          text-align: left;
-          padding: 30px;
-          background-color: #FFFFFF;
-          border-radius: 3px;
-          margin: 15px;
-          font-size: 1.2em;
-        }
-      .content {
-        max-width: 500px;
-        margin: auto;
-        text-align: center;
+      li {
+          list-style: none;
       }
-
-    </style>
+      .center { 
+         text-align: center;
+         padding: 30px;
+       }
+  </style>
 </head>
-<body class = "content">
+
+<body>
+    <nav class="navbar navbar-dark" style="background-color: coral;">
+      <a class="navbar-brand mx-auto" href="index.php">
+          Snatch
+      </a>
+    </nav>
   <?php
       include 'phpconfig.php';
     // Connect to the database. Please change the password in the following line accordingly
@@ -50,22 +35,24 @@
     $db     = $psql;
     $result = pg_query($db, "SELECT * FROM users where userid = '$userID'");    // need to replace the uid accordingly
     $row    = pg_fetch_assoc($result);    // To store the result row
-        echo '<h1> Hello '.$row[username].'!</h1>
-        <div class="left-div">
-      <strong>Name: </strong>'.$row[username].'</br>
-        <strong>Gender: </strong>'.$row[gender].'</br>
-      <strong>Date of Birth: </strong>'.$row[bday].'</br>
-      <strong>Driver Licence Number: </strong>'.$row[driverlicense].'</br>
-        <strong>Email: </strong>'.$row[email].'</br>
-        <strong>Phone Number: </strong>'.$row[phone].'</br>
-        <strong>User ID: </strong>'.$row[userid].'</br>
-        <form name="display" action="profile.php" method="POST" >
-            <input type="submit" name="edit" value="Edit" />
-        </form>';
+        echo '<h1 class="center"> Hello '.$row[username].'!</h1>
+        <div>
+          <h2> My Profile </h2>
+          <ul>
+          <strong>Name: </strong>'.$row[username].'</br>
+          <strong>Gender: </strong>'.$row[gender].'</br>
+          <strong>Date of Birth: </strong>'.$row[bday].'</br>
+          <strong>Driver Licence Number: </strong>'.$row[driverlicense].'</br>
+          <strong>Email: </strong>'.$row[email].'</br>
+          <strong>Phone Number: </strong>'.$row[phone].'</br>
+          <strong>User ID: </strong>'.$row[userid].'</br>
+          <form name="display" action="profile.php" method="POST" >
+              <input type="submit" name="edit" value="Edit" />
+          </form></ul>';
 
         if (isset($_POST['edit'])) {
         echo "<ul><form name='update' action='profile.php' method='POST' >
-      <strong>Name: </strong> <input type='text' name='name_updated' value='$row[username]'/> </br>
+        <strong>Name: </strong> <input type='text' name='name_updated' value='$row[username]'/> </br>
         <strong>Gender: </strong> <input type='text' name='gender_updated' value='$row[gender]'/></br>
         <strong>Date of Birth: </strong> <input type='date' name='bday_updated' value='$row[bday]'/></br>
         <strong>Driver Licence Number: </strong> <input type='text' name='dl_updated' value='$row[driverlicense]'/></br>
@@ -91,7 +78,7 @@
      ?>
     </div>
 
-    <div class = "right-div">
+    <div>
 
     <h2> My Cars </h2>
     <?php
@@ -128,8 +115,8 @@
 
         }
 
-        echo'<form name="display" action="profile.php" method="POST" >
-                <input type="submit" name="add" value="Add A Car!" />
+        echo'<ul><form name="display" action="profile.php" method="POST" >
+                <input style="margin-top:30px" type="submit" name="add" value="Add A Car!" />
             </form></ul>';
 
         if (isset($_POST['add'])) {
@@ -154,7 +141,7 @@
 
     </div>
 
-       <div class = "right-div">
+       <div>
 
     <h2> My Bids Status</h2>
     <?php
@@ -218,10 +205,11 @@
 
         }
     ?>
-
+    </div>
+    <div class = "center">
+    <button type="button"><a href="bid.php" style="text-decoration:none;">Book A Ride!</button>
+    <button type="button" ><a href="createaride.php" style="text-decoration:none;">Create A Ride!</button>
     </div>
 
-  <button type="button"><a href="bid.php" style="text-decoration:none;">Book A Ride!</button>
-  <button type="button" ><a href="createaride.php" style="text-decoration:none;">Create A Ride!</button>
 </body>
 </html>
