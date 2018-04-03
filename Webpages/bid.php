@@ -119,6 +119,8 @@
     <input type='text' name='rideid' value='$row[rideid]' disabled><br>
     Date:<br>
     <input type='text' name='dates' value='$row[dates]' disabled><br>
+    Time:<br>
+    <input type='text' name='times' value='$row[times]' disabled><br>
     Origin:<br>
     <input type='text' name='origin' value='$row[origin]' disabled><br>
     Destination:<br>
