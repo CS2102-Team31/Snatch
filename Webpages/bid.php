@@ -116,7 +116,7 @@
     echo "
     <form name='bid' method='POST'>
     RideID:<br>
-    <input type='text' name='rideid' value='$row[rideid]' disabled><br>
+    <input type='text' name='rideid' value='$row[rideid]'><br>
     Date:<br>
     <input type='text' name='dates' value='$row[dates]' disabled><br>
     Time:<br>
@@ -128,7 +128,7 @@
     Your bid:<br>
     <input type='text' name='bid' value='--Enter your bid--'><br>
     UserID:<br>
-    <input type='text' name='userid' value='$userID' disabled><br>
+    <input type='text' name='userid' value='$userID'><br>
     <input type='submit' name='new'><br>
     </form>
     ";
