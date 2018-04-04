@@ -147,13 +147,17 @@
         }
 
          if (isset($_POST['newcar'])) { // Submit the update SQL command
-             $id = uniqid(); 
-             $result = pg_query($db, "Begin; INSERT INTO cars values('$id','$_POST[carlicence_add]','$_POST[cartype_add]');INSERT INTO owns values('$email','$id'); commit;");
-            if (!$result) {
-                echo "Add failed!!";
+            if($_POST[carlicence_add] == "" || $_POST[cartype_add] == "") {
+                echo "Add failed!! Car Licence or Car Type cannot be empty.";
             } else {
-                echo "Add successful!";
-                header("Refresh:0");
+                $id = uniqid();
+                $result = pg_query($db, "Begin; INSERT INTO cars values('$id','$_POST[carlicence_add]','$_POST[cartype_add]');INSERT INTO owns values('$email','$id'); commit;");
+                if (!$result) {
+                    echo "Add failed!!";
+                } else {
+                    echo "Add successful!";
+                    header("Refresh:0");
+                }
             }
         }
     ?>
@@ -175,7 +179,7 @@
     $bids = array();
         while($row = pg_fetch_assoc($result)){    // To store the result row
             $numbids = pg_fetch_assoc(pg_query($db, "select ridesid, count(*) , min(price) from bids where ridesid = '$row[rideid]' group by ridesid;"));
-             $mybid = pg_fetch_assoc(pg_query($db, "select price,status from bids where ridesid = '$row[rideid]' and emails = '$email'"));
+             $mybid = pg_fetch_assoc(pg_query($db, "select price,status,sidenote from bids where ridesid = '$row[rideid]' and emails = '$email'"));
             echo '<ul>
             <strong>Ride '.$numcar.'</strong> </br>
             <strong>Ride ID: </strong>'.$row[rideid].'</br>
@@ -188,6 +192,7 @@
             <strong>Min bid: </strong>'.$numbids[min].'</br>
             <strong>My bid: </strong>'.$mybid[price].'</br>
             <strong>Status: </strong>'.$mybid[status].'</br>
+            <strong>Comments: </strong>'.$mybid[sidenote].'</br>
             <form name="display" action="profile.php" method="POST" >
                 <input type="submit" name="remove'.$numcar.'" value="Retract bid" />
                 <input type="submit" name="edit'.$numcar.'" value="Edit bid" />
@@ -207,13 +212,18 @@
              if (isset($_POST['edit'.$numcar])) {
               echo "<ul><form name='update' action='profile.php' method='POST' >
             <strong>New Bid: </strong> <input type='integer' name='bid_updated' value='$mybid[price]'/> </br>
+            <strong>Comments: </strong> <input type='text' name='sidenote' value='$mybid[sidenote]'/> </br>
               <li><input type='submit' name='bid-edit' value= 'Update'/></li>
             </form></ul>";
               }
 
          if (isset($_POST['bid-edit'])) {  // Submit the update SQL command
-            $result = pg_query($db, "UPDATE bids SET price = '$_POST[bid_updated]' WHERE ridesid = '$row[rideid]' AND emails = '$email'");
+            $sidenote = ($_POST[sidenote] == "") ? "null" : "'$_POST[sidenote]'";
+            $result = pg_query($db, "UPDATE bids SET price = '$_POST[bid_updated]', sidenote = $sidenote WHERE ridesid = '$row[rideid]' AND emails = '$email'");
             if (!$result) {
+                $failedresult = pg_send_query($db, "UPDATE bids SET price = '$_POST[bid_updated]', sidenote = $sidenote WHERE ridesid = '$row[rideid]' AND emails = '$email'");
+
+                                    echo pg_result_error(pg_get_result($db));
                 echo "Update failed!!";
             } else {
                 echo "Update successful!";
