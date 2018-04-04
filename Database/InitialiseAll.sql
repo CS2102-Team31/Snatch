@@ -1,5 +1,5 @@
+﻿DROP TABLE drives;
 DROP TABLE owns;
-DROP TABLE drives;
 DROP TABLE bids;
 DROP TABLE manages;
 DROP TABLE users;
@@ -9,29 +9,29 @@ DROP TABLE admins;
 
 -- Users
 CREATE TABLE users (
-    email VARCHAR(32),
-    userid VARCHAR(100) unique,
+    email VARCHAR(32) unique,
     username VARCHAR(32) unique not null,
     pwd VARCHAR(32) not null,
     phone numeric(8, 0) not null,
     gender VARCHAR(6),
     bday DATE,
     driverLicense VARCHAR(9),
-    primary key(email, userid),
+    primary key(email),
     check(email like '___%@%___.com' and username not like '%[0-9]%')
 );
 
 -- Rides
 CREATE TABLE rides (
-    rideid VARCHAR(100) unique primary key,
-    dates DATE not null,
-    times TIME not null,
+    rideid VARCHAR(100) unique,
+    dates DATE,
+    times TIME,
     origin VARCHAR(32) not null,
     destination VARCHAR(32) not null,
     basePrice INTEGER not null,
     capacity INTEGER not null,
     biddingType VARCHAR(10) not null,
-    sidenote TEXT
+    sidenote TEXT,
+    primary key(rideid, dates, times)
 );
 
 -- Cars
@@ -53,10 +53,10 @@ CREATE TABLE admins (
 
 -- User owns cars
 CREATE TABLE owns (
-    usersid VARCHAR(100),
+    emails VARCHAR(32),
     carsid VARCHAR(100),
-    primary key(usersid, carsid),
-    foreign key(usersid) references users(userid)
+    primary key(emails, carsid),
+    foreign key(emails) references users(email)
         on DELETE CASCADE,
     foreign key(carsid) references cars(carid)
         on DELETE CASCADE
@@ -64,27 +64,27 @@ CREATE TABLE owns (
 
 -- User drives rides
 CREATE TABLE drives (
-    usersid VARCHAR(100),
-    ridesid VARCHAR(100) unique not null,
-    carsid VARCHAR(100) not null,
-    primary key(usersid, ridesid),
-    foreign key(usersid) references users(userid)
+    email VARCHAR(32),
+    ridesid VARCHAR(100),
+    carid VARCHAR(100) not null,
+    datess DATE not null,
+    timess TIME not null,
+    primary key(email, datess, timess),
+    foreign key(email, carid) references owns(emails, carsid)
         on DELETE CASCADE,
-    foreign key(ridesid) references rides(rideid)
-        on DELETE CASCADE,
-    foreign key(carsid) references cars(carid)
+    foreign key(ridesid, datess, timess) references rides(rideid, dates, times)
         on DELETE CASCADE
 );
 
 -- User bids for rides
 CREATE TABLE bids (
-    usersid VARCHAR(100),
+    emails VARCHAR(32),
     ridesid VARCHAR(100),
     price INTEGER not null,
-    status VARCHAR(1) not null,
+    status INTEGER not null,
     sidenote TEXT,
-    primary key(usersid, ridesid),
-    foreign key(usersid) references users(userid)
+    primary key(emails, ridesid),
+    foreign key(emails) references users(email)
         on DELETE CASCADE,
     foreign key(ridesid) references rides(rideid)
         on DELETE CASCADE
@@ -102,23 +102,23 @@ CREATE TABLE manages (
 
 -- Users
 INSERT INTO users
-values('renee@gmail.com', 123456789, 'Renee', 123456, 81234567, 'Female', '1997-06-01', 'S1234567A');
+values('renee@gmail.com', 'Renee', 123456, 81234567, 'Female', '1997-06-01', 'S1234567A');
 INSERT INTO users
-values('yilun@gmail.com', 234567891, 'Yilun', 234567, 81234569, 'Male', '1997-06-02', 'S1234567B');
+values('yilun@gmail.com', 'Yilun', 234567, 81234569, 'Male', '1997-06-02', 'S1234567B');
 INSERT INTO users
-values('brian@gmail.com', 345678912, 'Brian', 345678, 81234561, 'Male', '1997-06-03', 'S1234567C');
+values('brian@gmail.com', 'Brian', 345678, 81234561, 'Male', '1997-06-03', 'S1234567C');
 INSERT INTO users
-values('cindy@gmail.com', 456789123, 'Cindy', 456789, 81234562, 'Female', '1997-06-04', 'S1234567D');
+values('cindy@gmail.com', 'Cindy', 456789, 81234562, 'Female', '1997-06-04', 'S1234567D');
 INSERT INTO users
-values('billy@gmail.com', 567891234, 'Billy', 567891, 81234563, 'Male', '1997-06-05', null);
+values('billy@gmail.com', 'Billy', 567891, 81234563, 'Male', '1997-06-05', null);
 INSERT INTO users
-values('peggy@gmail.com', 678912345, 'Peggy', 678912, 81234564, 'Female', null, null);
+values('peggy@gmail.com', 'Peggy', 678912, 81234564, 'Female', null, null);
 INSERT INTO users
-values('alex@gmail.com', 789123456, 'Alex', 789123, 81234565, null, null, null);
+values('alex@gmail.com', 'Alex', 789123, 81234565, null, null, null);
 INSERT INTO users
-values('anna@gmail.com', 891234567, 'Anna', 891234, 81234566, 'Female', null, 'S1234567E');
+values('anna@gmail.com', 'Anna', 891234, 81234566, 'Female', null, 'S1234567E');
 INSERT INTO users
-values('martin@gmail.com', 912345678, 'Martin', 912345, 81234568, null, '1997-06-06', 'S1234567F');
+values('martin@gmail.com', 'Martin', 912345, 81234568, null, '1997-06-06', 'S1234567F');
 
 -- Rides
 INSERT INTO rides
@@ -162,47 +162,47 @@ values(4123, 'admin4', 9932, 'Cindy');
 
 -- User owns cars
 INSERT INTO owns
-values(123456789, 1234567);
+values('renee@gmail.com', 1234567);
 INSERT INTO owns
-values(123456789, 7123456);
+values('renee@gmail.com', 7123456);
 INSERT INTO owns
-values(234567891, 2345671);
+values('yilun@gmail.com', 2345671);
 INSERT INTO owns
-values(345678912, 3456712);
+values('brian@gmail.com', 3456712);
 INSERT INTO owns
-values(456789123, 4567123);
+values('cindy@gmail.com', 4567123);
 INSERT INTO owns
-values(891234567, 5671234);
+values('anna@gmail.com', 5671234);
 INSERT INTO owns
-values(912345678, 6712345);
+values('martin@gmail.com', 6712345);
 
 -- User drives rides
 INSERT INTO drives
-values(123456789, 12345678, 1234567);
+values('renee@gmail.com', 12345678, 1234567, '2018-02-28', '14:20:20');
 INSERT INTO drives
-values(123456789, 23456781, 1234567);
+values('renee@gmail.com', 23456781, 1234567, '2018-02-28', '15:20:20');
 INSERT INTO drives
-values(234567891, 34567812, 2345671);
+values('yilun@gmail.com', 34567812, 2345671, '2018-02-28', '09:00:20');
 INSERT INTO drives
-values(891234567, 45678123, 5671234);
+values('anna@gmail.com', 45678123, 5671234, '2018-02-28', '09:05:20');
 INSERT INTO drives
-values(912345678, 56781234, 6712345);
+values('martin@gmail.com', 56781234, 6712345, '2018-03-01', '09:30:00');
 INSERT INTO drives
-values(456789123, 67812345, 4567123);
+values('cindy@gmail.com', 67812345, 4567123, '2018-03-03', '22:05:08');
 
 -- User bids for rides
 INSERT INTO bids
-values(567891234, 12345678, 12, 0, null);
+values('billy@gmail.com', 12345678, 12, 0, null);
 INSERT INTO bids
-values(789123456, 12345678, 13, 0, null);
+values('alex@gmail.com', 12345678, 13, 0, null);
 INSERT INTO bids
-values(912345678, 56781234, 24, 0, null);
+values('martin@gmail.com', 56781234, 24, 0, null);
 INSERT INTO bids
-values(891234567, 67812345, 15, 0, null);
+values('anna@gmail.com', 67812345, 15, 0, null);
 INSERT INTO bids
-values(345678912, 34567812, 26, 0, null);
+values('brian@gmail.com', 34567812, 26, 0, null);
 INSERT INTO bids
-values(789123456, 45678123, 15, 0, null);
+values('alex@gmail.com', 45678123, 15, 0, null);
 
 -- Administrator manages entities
 INSERT INTO manages

@@ -57,12 +57,12 @@
                 $db     = $psql;
                     $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");
                     $row = pg_fetch_assoc($result);
-                    if ($row[userid] == "") {
+                    if ($row[email] == "") {
                         echo "Wrong username.";
                     } else {
                         if ($row[pwd] == $_POST[password]) {
                             session_start();
-                            $_SESSION['userID'] = $row[userid];
+                            $_SESSION['userID'] = $row[email];
                             echo "this is". $_SESSION['userID'];
                             header("location: profile.php");
                         } else {
@@ -147,16 +147,15 @@
                         echo $gender;
                         echo "<br>";*/ 
                         $gender = ($_POST[gender] == "None") ? "null" : "'$_POST[gender]'";
-                        $uniqueId = uniqid();
                         $_POST[birthday] = !empty($_POST[birthday]) ? "'$_POST[birthday]'" : "null";
                         $_POST[driver_license] = !empty($_POST[driver_license]) ? "'$_POST[driver_license]'" : "null";
 
-                        $result = pg_query($db, "INSERT INTO users (email, userid, username, pwd, phone, gender, bday, driverLicense)
-                                                    VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
+                        $result = pg_query($db, "INSERT INTO users (email, username, pwd, phone, gender, bday, driverLicense)
+                                                    VALUES ('$_POST[email]', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
                                                 ");
                         if (!$result) {
-                            $failedresult = pg_send_query($db,  "INSERT INTO users (email, userid, username, pwd, phone, gender, bday, driverLicense)
-                                                                    VALUES ('$_POST[email]', '$uniqueId', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
+                            $failedresult = pg_send_query($db,  "INSERT INTO users (email, username, pwd, phone, gender, bday, driverLicense)
+                                                                    VALUES ('$_POST[email]', '$_POST[name]', '$_POST[password]', '$_POST[phone]', $gender, $_POST[birthday], $_POST[driver_license])
                                                             ");
                             echo pg_result_error(pg_get_result($db));
                             echo "<br>";
@@ -201,8 +200,6 @@
                     <input type='text' name='birthday' value='$row[bday]'><br>
                     Email:<br>
                     <input type='text' name='email' value='$row[email]'><br>
-                    UserID:<br>
-                    <input type='text' name='userID' value='$row[userid]'><br>
                     Password:<br>
                     <input type='password' name='password' value='$row[pwd]'><br>
                     Driver License:<br>

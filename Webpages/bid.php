@@ -107,7 +107,7 @@
     include 'phpconfig.php';
     $db     = $psql;
     session_start();
-    $userid = $_SESSION['userID'];
+    $email = $_SESSION['userID'];
     $result = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");		// Query template
     $row    = pg_fetch_assoc($result);		// To store the result row
 
@@ -128,17 +128,17 @@
       Base price:<br>
       <input type='text' name='baseprice' value='$row[baseprice]' readonly><br>
       Your bid:<br>
-      <input type='text' name='bid' value='--Enter your bid--'><br>
+      <input type='text' name='bid' placeholder='Enter your bid' ><br>
       <input type='submit' name='new'><br>
       </form>
       ";
     }
     if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has already bid for ride, else insert.
       if($_POST[bid] >= $_POST[baseprice]) {
-        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]' WHERE usersid = '$userid' and ridesid = '$_POST[rideid]' ;
+        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]' WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
           INSERT INTO bids
-          SELECT '$userid', '$_POST[rideid]', '$_POST[bid]', 0, null
-          WHERE NOT EXISTS (SELECT 1 FROM bids WHERE usersid = '$userid' and ridesid = '$_POST[rideid]');");
+          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, null
+          WHERE NOT EXISTS (SELECT 1 FROM bids WHERE emails = '$email' and ridesid = '$_POST[rideid]');");
           if (!$result) {
             echo "Bid failed!!";
           } else {
