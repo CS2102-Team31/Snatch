@@ -87,14 +87,7 @@
             driverLicense = $dl,
             phone = '$_POST[phone_updated]' WHERE email = '$email'");
             if (!$result) {
-            $failedresult = pg_send_query($db, "UPDATE users SET username = '$_POST[name_updated]',
-                                                            gender = $gender3, bday = $bday,
-                                                            driverLicense = $dl,
-                                                            phone = '$_POST[phone_updated]' WHERE email = '$email'");
-
-                            echo pg_result_error(pg_get_result($db));
                 echo "Update failed!!";
-                //echo $email;
             } else {
                 echo "Update successful!";
                 header("Refresh:0");

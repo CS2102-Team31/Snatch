@@ -29,7 +29,7 @@
 
     include 'phpconfig.php';
     session_start();
-    $userID = $_SESSION['userID'];
+    $email = $_SESSION['userID'];
     $db     = $psql;
     $result = pg_query($db, "with bidcount as (
     SELECT ridesid, status, min(price) as minprice, count(*) as numbids
@@ -129,23 +129,27 @@
       <input type='text' name='baseprice' value='$row[baseprice]' readonly><br>
       Your bid:<br>
       <input type='text' name='bid' placeholder='Enter your bid' ><br>
+      Comments:<br>
+      <input type='text' name='sidenote' placeholder='Comments for driver' ><br>
       <input type='submit' name='new'><br>
       </form>
       ";
     }
     if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has already bid for ride, else insert.
       if($_POST[bid] >= $_POST[baseprice]) {
-        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]' WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
+        $sidenote = ($_POST[sidenote] == "") ? "null" : '$_POST[sidenote]';
+        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = $sidenote WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
           INSERT INTO bids
-          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, null
+          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, '$_POST[sidenote]'
           WHERE NOT EXISTS (SELECT 1 FROM bids WHERE emails = '$email' and ridesid = '$_POST[rideid]');");
           if (!$result) {
             echo "Bid failed!!";
           } else {
             echo "Bid successful!";
           }
-        }
-        else{
+        } elseif($_POST[bid] == "") {
+          echo "Bid failed. Bid price not entered.";
+        } else {
           echo "Bid failed. Bid price lower than base price!";
         }
       }

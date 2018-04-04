@@ -1,4 +1,4 @@
-﻿DROP TABLE drives;
+﻿﻿DROP TABLE drives;
 DROP TABLE owns;
 DROP TABLE bids;
 DROP TABLE manages;
