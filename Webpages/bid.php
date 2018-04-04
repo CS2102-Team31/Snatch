@@ -140,7 +140,7 @@
         $sidenote = ($_POST[sidenote] == "") ? "null" : '$_POST[sidenote]';
         $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = $sidenote WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
           INSERT INTO bids
-          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, '$_POST[sidenote]'
+          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, $sidenote
           WHERE NOT EXISTS (SELECT 1 FROM bids WHERE emails = '$email' and ridesid = '$_POST[rideid]');");
           if (!$result) {
             echo "Bid failed!!";
