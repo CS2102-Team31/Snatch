@@ -2,27 +2,38 @@
 <head>
   <title>Create A Ride</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <style>
-          .error {
-              color: #FF0000;
-          }
-
-          li {
-              list-style: none;
-          }
-      </style>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+   <style>
+      div {
+          vertical-align: top;
+          font-size: 1.2em;
+          width: 50%;
+          margin: auto;
+          padding: 10px;
+        }
+      li {
+          list-style: none;
+      }
+      .center {
+         text-align: center;
+         padding: 30px;
+       }
+  </style>
 </head>
 <body>
-
+    <nav class="navbar navbar-dark" style="background-color: coral;">
+          <a class="navbar-brand mx-auto" href="index.php">
+              Snatch
+          </a>
+        </nav>
   <?php
     // Connect to the database. Please change the password in the following line accordingly
     include 'phpconfig.php';
     session_start();
-    $userid = $_SESSION['userID'];
+    $email = $_SESSION['userID'];
     $db     = $psql;
-    $username = pg_fetch_assoc(pg_query($db, "SELECT * FROM users where userid = '$userid'"))[username];
-    $result = pg_query($db, "SELECT * FROM rides where exists (SELECT 1 FROM (SELECT ridesid FROM drives where usersid = '$userid') as R where R.ridesid = rides.rideid);");
+    $username = pg_fetch_assoc(pg_query($db, "SELECT * FROM users where email = '$email'"))[username];
+    $result = pg_query($db, "SELECT * FROM rides where exists (SELECT 1 FROM (SELECT ridesid FROM drives where email = '$email') as R where R.ridesid = rides.rideid);");
     echo '<h1>' .$username. '\'s Rides</h1>';
 
     $rides = array();
@@ -37,7 +48,6 @@
         <strong> Destination: </strong>' .$row[destination].'</br>
         <strong> Base Price: </strong>' .$row[baseprice].'</br>
         <strong> Capacity: </strong>' .$row[capacity].'</br>
-        <strong> Bidding Type: </strong>' .$row[biddingtype].'</br>
         <strong> Comments: </strong>' .$row[sidenote].'</br>
         <form name="display" action="createaride.php" method="POST" >
               <input type="submit" name="edit'.$numride.'" value="Edit" />
@@ -65,14 +75,13 @@
                     echo "Remove ride failed";
                 } else {
                     echo "Remove ride successful";
-                    header("Location: http://localhost:8080/demo/createaride.php");
+                    header("Refresh:0");
                 }
             }
         }
 
         if (isset($_POST['edit'.$numride])) {
             $num = $rides[$numride - 1];
-            $type = ($row[biddingtype] == 'Auto') ? 'Self' : 'Auto';
             echo "<ul><form name='update' action='createaride.php' method='POST' >
             <strong>Date: </strong> <input type='date' name='date_updated' value='$row[dates]' required /> </br>
             <strong>Time: </strong> <input type='time' name='time_updated' value='$row[times]' required /></br>
@@ -80,8 +89,6 @@
             <strong>Destination: </strong> <input type='text' name='d_updated' value='$row[destination]' required /></br>
             <strong>Base Price: </strong> <input type='number' name='bp_updated' value='$row[baseprice]' min='1' required /></br>
             <strong>Capacity: </strong> <input type='number' name='capacity_updated' value='$row[capacity]' min='1' required /></br>
-            <strong>Bidding Type: </strong> <input type='radio' name='bt_updated' value='$row[biddingtype]' checked />$row[biddingtype]
-            <input type='radio' name='bt_updated' value='$type' />$type</br>
             <strong>Comments: </strong> <input type='text' name='comment_updated' value='$row[sidenote]'/></br>
             <li><input type='submit' name='new".$numride."' value= 'Update'/></li>
           	</form></ul>";
@@ -91,26 +98,104 @@
             $num = $rides[$numride - 1];
             $result = pg_query($db, "UPDATE rides SET dates = '$_POST[date_updated]', times = '$_POST[time_updated]',
              origin = '$_POST[origin_updated]', destination = '$_POST[d_updated]', baseprice = '$_POST[bp_updated]',
-             capacity = '$_POST[capacity_updated]', biddingtype = '$_POST[bt_updated]',
+             capacity = '$_POST[capacity_updated]',
              sidenote = '$_POST[comment_updated]' WHERE rideid = '$num'");
              if (!$result) {
                 $failedresult = pg_send_query($db, "UPDATE rides SET dates = '$_POST[date_updated]', times = '$_POST[time_updated]',
                 origin = '$_POST[origin_updated]', destination = '$_POST[d_updated]', baseprice = '$_POST[bp_updated]',
-                capacity = '$_POST[capacity_updated]', biddingtype = '$_POST[bt_updated]',
+                capacity = '$_POST[capacity_updated]',
                 sidenote = '$_POST[comment_updated]' WHERE rideid = '$num'");
 
                 echo pg_result_error(pg_get_result($db));
                 echo "Update failed!!";
              } else {
                 echo "Update successful!";
-                header("Location: http://localhost:8080/demo/createaride.php");
+                header("Refresh:0");
              }
         }
 
         $numride += 1;
     }
 
-    ?>
+//print bidding
+
+
+    for ($i = 0; $i < count($rides); $i++) {
+        $rideid = $rides[$i];
+        $result = pg_query($db, "SELECT emails, price, sidenote, status FROM bids where ridesid = '$rideid' ORDER BY status desc, emails asc;");
+
+        $bids = array();
+        $numbid = 1;
+        $j = $i + 1;
+        while($row = pg_fetch_assoc($result)){
+            if($row[status] == 0) {
+                echo '<ul>
+                <strong> Bid '.$j.'-'.$numbid.'</strong> </br>
+                <strong> Email: </strong>' .$row[emails].'</br>
+                <strong> Price: </strong>' .$row[price].'</br>
+                <strong> Comments: </strong>' .$row[sidenote].'</br>
+
+                <form name="display" action="createaride.php" method="POST" >
+                  <input type="submit" name="'.$j.'choose'.$numbid.'" value="Select" />
+                </form></ul>';
+            } else {
+                echo '<ul>
+                <strong> Bid '.$j.'-'.$numbid.' (CHOSEN)</strong> </br>
+                <strong> Email: </strong>' .$row[emails].'</br>
+                <strong> Price: </strong>' .$row[price].'</br>
+                <strong> Comments: </strong>' .$row[sidenote].'</br>
+
+                <form name="display" action="createaride.php" method="POST" >
+                  <input type="submit" name="'.$j.'unchoose'.$numbid.'" value="Deselect" />
+                </form></ul>';
+            }
+
+            array_push($bids[$j], $row[emails]);
+
+            if (isset($_POST[$j.'choose'.$numbid])) {
+                $num = $bids[$j][$numbid - 1];
+                $result = pg_query($db, "UPDATE bids SET status = 1 WHERE emails = '$num' and ridesid = '$rideid';");
+                if(!$result) {
+                    $failedresult = pg_send_query($db, "DELETE FROM drives where ridesid  = '$num'");
+
+                    echo pg_result_error(pg_get_result($db));
+                    echo "Choose ride failed";
+                } else {
+
+                        echo "Choose ride successful";
+                        echo ($num == "") ? "null" : $num;
+                        //header("Refresh:0");
+                }
+            }
+
+            if (isset($_POST[$j.'unchoose'.$numbid])) {
+                $num = $bids[$j][$numbid - 1];
+                $result = pg_query($db, "UPDATE bids SET status = 0 WHERE emails = '$num' and ridesid = '$rideid';");
+                if(!$result) {
+                    $failedresult = pg_send_query($db, "DELETE FROM drives where ridesid  = '$num'");
+
+                    echo pg_result_error(pg_get_result($db));
+                    echo "Choose ride failed";
+                } else {
+                    echo "Unchoose ride successful";
+                    echo ($num == "") ? "null" : $num;
+                    //header("Refresh:0");
+                }
+            }
+
+            $numbid += 1;
+        }
+    }
+        ?>
+
+
+
+
+
+
+
+
+
 
   <h1>Create A Ride</h1>
   <ul>
@@ -127,9 +212,6 @@
       <li><input type="number" name="basePrice" min="1" required/></li>
       <li>Capacity:</li>
       <li><input type="number" name="capacity" min="1" required/></li>
-      <li>Bidding Type:</li>
-      <li><input type="radio" name="biddingType" value="Auto" checked />Auto<br>
-          <input type="radio" name="biddingType" value="Self" />Self</li>
       <li>Comments:</li>
       <li><input type="text" name="sidenote" />
       <li><input type="submit" name="CreateARide" value="Create" /></li>
@@ -139,35 +221,32 @@
   	// Connect to the database. Please change the password in the following line accordingly
     include 'phpconfig.php';
     session_start();
-    $userid = $_SESSION['userID'];
+    $email = $_SESSION['userID'];
     $db     = $psql;
     if (isset($_POST['CreateARide'])) {
         $rideid = uniqid('ride');
         $_POST[sidenote] = !empty($_POST[sidenote]) ? "'$_POST[sidenote]'" : "null";
 
         $result = pg_query($db, "INSERT INTO rides values('$rideid', '$_POST[dates]', '$_POST[times]',
-        '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]', '$_POST[biddingType]',
-        $_POST[sidenote])");
+        '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]',
+        $_POST[sidenote]);");
 
         if (!$result) {
             $failedresult = pg_send_query($db, "INSERT INTO rides values('$rideid', '$_POST[dates]', '$_POST[times]',
-            '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]', '$_POST[biddingType]',
+            '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]',
             $_POST[sidenote])");
 
             echo pg_result_error(pg_get_result($db));
             echo "Creating ride failed!";
 
         } else {
-            $carid = pg_fetch_assoc(pg_query("SELECT carsid FROM owns WHERE usersid = '$userid'"))[carsid];
-            $result1 = pg_query($db, "INSERT INTO drives values('$userid', '$rideid', '$carid')");
+            $carid = pg_fetch_assoc(pg_query("SELECT carsid FROM owns WHERE emails = '$email'"))[carsid];
+            $result1 = pg_query($db, "INSERT INTO drives values('$email', '$rideid', '$carid', '$_POST[dates]', '$_POST[times]');");
             if(!$result) {
-                $failedresult = pg_send_query($db, "INSERT INTO drives values('$userid', '$rideid', '$carid')");
-
-                echo pg_result_error(pg_get_result($db));
                 echo "Creating ride failed!!";
             } else {
                 echo "Created ride successfully!";
-                header("Location: http://localhost:8080/demo/createaride.php");
+                header("Refresh:0");
             }
         }
     }

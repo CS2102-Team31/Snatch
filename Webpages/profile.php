@@ -140,24 +140,20 @@
 
         if (isset($_POST['add'])) {
         echo "<ul><form name='update' action='profile.php' method='POST' >
-      <strong>Car Licence: </strong> <input type='text' name='carlicence_add'/> </br>
-        <strong>Car Type: </strong> <input type='text' name='cartype_add'/>
+      <strong>Car Licence: </strong> <input type='text' name='carlicence_add' required/> </br>
+        <strong>Car Type: </strong> <input type='text' name='cartype_add' required/>
         <li><input type='submit' name='newcar' value= 'Add'/></li>
       </form></ul>";
         }
 
          if (isset($_POST['newcar'])) { // Submit the update SQL command
-            if($_POST[carlicence_add] == "" || $_POST[cartype_add] == "") {
-                echo "Add failed!! Car Licence or Car Type cannot be empty.";
+            $id = uniqid();
+            $result = pg_query($db, "Begin; INSERT INTO cars values('$id','$_POST[carlicence_add]','$_POST[cartype_add]');INSERT INTO owns values('$email','$id'); commit;");
+            if (!$result) {
+                echo "Add failed!!";
             } else {
-                $id = uniqid();
-                $result = pg_query($db, "Begin; INSERT INTO cars values('$id','$_POST[carlicence_add]','$_POST[cartype_add]');INSERT INTO owns values('$email','$id'); commit;");
-                if (!$result) {
-                    echo "Add failed!!";
-                } else {
-                    echo "Add successful!";
-                    header("Refresh:0");
-                }
+                echo "Add successful!";
+                header("Refresh:0");
             }
         }
     ?>

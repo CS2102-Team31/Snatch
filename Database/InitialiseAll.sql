@@ -29,7 +29,6 @@ CREATE TABLE rides (
     destination VARCHAR(32) not null,
     basePrice INTEGER not null,
     capacity INTEGER not null,
-    biddingType VARCHAR(10) not null,
     sidenote TEXT,
     primary key(rideid, dates, times)
 );
@@ -122,17 +121,17 @@ values('martin@gmail.com', 'Martin', 912345, 81234568, null, '1997-06-06', 'S123
 
 -- Rides
 INSERT INTO rides
-values(12345678, '2018-02-28', '14:20:20', 'Tampines MRT', 'Changi Airport', 10, 3, 'Auto', 'Only waiting for 10 minutes');
+values(12345678, '2018-02-28', '14:20:20', 'Tampines MRT', 'Changi Airport', 10, 3, 'Only waiting for 10 minutes');
 INSERT INTO rides
-values(23456781, '2018-02-28', '15:20:20', 'Tampines MRT', 'Bishan MRT', 30, 2, 'Auto', null);
+values(23456781, '2018-02-28', '15:20:20', 'Tampines MRT', 'Bishan MRT', 30, 2, null);
 INSERT INTO rides
-values(34567812, '2018-02-28', '09:00:20', 'NUS School of Computing', 'Bishan MRT', 25, 2, 'Self', null);
+values(34567812, '2018-02-28', '09:00:20', 'NUS School of Computing', 'Bishan MRT', 25, 2, null);
 INSERT INTO rides
-values(45678123, '2018-02-28', '09:05:20', 'Botanic Gardens MRT', 'Bishan MRT', 15, 5, 'Auto', null);
+values(45678123, '2018-02-28', '09:05:20', 'Botanic Gardens MRT', 'Bishan MRT', 15, 5, null);
 INSERT INTO rides
-values(56781234, '2018-03-01', '09:30:00', 'Clementi MRT', 'Ang Mo Kio MRT', 24, 3, 'Self', 'Waiting for 5 minutes');
+values(56781234, '2018-03-01', '09:30:00', 'Clementi MRT', 'Ang Mo Kio MRT', 24, 3, 'Waiting for 5 minutes');
 INSERT INTO rides
-values(67812345, '2018-03-03', '22:05:08', 'Crescent Girls School', 'Orchard MRT', 10, 5, 'Auto', null);
+values(67812345, '2018-03-03', '22:05:08', 'Crescent Girls School', 'Orchard MRT', 10, 5, null);
 
 -- Cars
 INSERT INTO cars

@@ -38,7 +38,7 @@
     GROUP By ridesid, status
     )
 
-    SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid
+    SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, R.sidenote
     FROM rides R full outer join bidcount B on (R.rideid = B.ridesid)
     Order by R.dates, R.times, R.origin, R.destination, minbid
     ;
@@ -128,7 +128,7 @@
       Base price:<br>
       <input type='text' name='baseprice' value='$row[baseprice]' readonly><br>
       Your bid:<br>
-      <input type='text' name='bid' placeholder='Enter your bid' ><br>
+      <input type='text' name='bid' placeholder='Enter your bid' required><br>
       Comments:<br>
       <input type='text' name='sidenote' placeholder='Comments for driver' ><br>
       <input type='submit' name='new'><br>
@@ -147,8 +147,6 @@
           } else {
             echo "Bid successful!";
           }
-        } elseif($_POST[bid] == "") {
-          echo "Bid failed. Bid price not entered.";
         } else {
           echo "Bid failed. Bid price lower than base price!";
         }
