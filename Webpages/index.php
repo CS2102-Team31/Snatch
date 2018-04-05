@@ -54,19 +54,30 @@
 
                 if (isset($_POST['login'])){
 
-                $db     = $psql;
+                    $db     = $psql;
                     $result = pg_query($db, "SELECT * FROM users where username = '$_POST[username]'");
+                    $resultAdmin = pg_query($db, "SELECT * FROM admins where adminname = '$_POST[username]'");
                     $row = pg_fetch_assoc($result);
-                    if ($row[email] == "") {
+                    $rowAdmin = pg_fetch_assoc($resultAdmin);
+                    if ($row[email] == "" && $rowAdmin[adminname] == "") {
                         echo "Wrong username.";
-                    } else {
-                        if ($row[pwd] == $_POST[password]) {
+                    } else if ($row[email] != "") {
+                        if ($row[pwd] != $_POST[password]) {
+                            echo "Wrong password.";
+                        } else {
                             session_start();
                             $_SESSION['userID'] = $row[email];
                             echo "this is". $_SESSION['userID'];
                             header("location: profile.php");
-                        } else {
+                        }
+                    } else if ($rowAdmin[adminname] != "") {
+                        if ($rowAdmin[adminpwd] != $_POST[password]) {
                             echo "Wrong password.";
+                        } else {
+                            session_start();
+                            $_SESSION['sessionID'] = $rowAdmin[adminname];
+                            echo "this is". $_SESSION['sessionID'];
+                            header("location: admin.php");
                         }
                     }
                 }
