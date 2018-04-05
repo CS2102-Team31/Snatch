@@ -176,6 +176,12 @@
         while($row = pg_fetch_assoc($result)){    // To store the result row
             $numbids = pg_fetch_assoc(pg_query($db, "select ridesid, count(*) , min(price) from bids where ridesid = '$row[rideid]' group by ridesid;"));
              $mybid = pg_fetch_assoc(pg_query($db, "select price,status,sidenote from bids where ridesid = '$row[rideid]' and emails = '$email'"));
+
+              if($mybid[status] == 1){ 
+                $status = "Accepted";
+             }else{
+                $status = "Pending";
+             }
             echo '<ul>
             <strong>Ride '.$numcar.'</strong> </br>
             <strong>Ride ID: </strong>'.$row[rideid].'</br>
@@ -187,7 +193,7 @@
             <strong>Num bidders: </strong>'.$numbids[count].'</br>
             <strong>Min bid: </strong>'.$numbids[min].'</br>
             <strong>My bid: </strong>'.$mybid[price].'</br>
-            <strong>Status: </strong>'.$mybid[status].'</br>
+            <strong>Status: </strong>'.$status.'</br>
             <strong>Comments: </strong>'.$mybid[sidenote].'</br>
             <form name="display" action="profile.php" method="POST" >
                 <input type="submit" name="remove'.$numcar.'" value="Retract bid" />
@@ -232,8 +238,8 @@
     ?>
     </div>
     <div class = "center">
-    <button type="button"><a href="bid.php" style="text-decoration:none;">Book A Ride!</button>
-    <button type="button" ><a href="createaride.php" style="text-decoration:none;">Create A Ride!</button>
+    <button type="button"><a href="bid.php" style="text-decoration:none;">Bid for A Ride!</button>
+    <button type="button" ><a href="createaride.php" style="text-decoration:none;">Manage your Rides!</button>
     </div>
 
 </body>
