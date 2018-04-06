@@ -31,20 +31,20 @@
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");    // need to replace the uid accordingly
     $row    = pg_fetch_assoc($result);  
   
-    echo '<br><h1 style="text-align: center">Hello '.$row[adminname].', '.$row[employeename].'</h1> <br>';
+    echo '<br><h1 style="text-align: center">Hello '.$row[adminname].', '.$row[employeename].'</h1><br>';
   ?>
   
   </div>
 
   <div>
-    <br><h2 style="text-align: center">Users</h2> <br>
+    <br><h2 style="text-align: center">All Users</h2> <br>
     <?php
     include 'phpconfig.php';
     session_start();
-    $email = $_SESSION['userID'];
     $db     = $psql;
     $result = pg_query($db, 
-    "SELECT U.email, U.username, U.pwd, U.phone, U.gender, U.bday, U.driverlicense FROM Users U;");
+    "SELECT U.email, U.username, U.pwd, U.phone, U.gender, U.bday, U.driverlicense 
+    FROM Users U;");
 
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
@@ -78,7 +78,7 @@
 
     ?>
 
-    <h1>Insert User</h1>
+    <h4>Insert User</h4>
       <form name="registerForm" action="admin.php" method="POST">
       <small class="error"> * required field</small>
       <div class="form-row">
@@ -115,10 +115,8 @@
   </div>
 
   <?php
-
   include 'phpconfig.php';
   $db     = $psql;
-  // damn annoying because all fields must be fields
   if (isset($_POST['registerUser'])){
     $gender = ($_POST[gender] == "None") ? "null" : "'$_POST[gender]'";
     $_POST[birthday] = !empty($_POST[birthday]) ? "'$_POST[birthday]'" : "null";
@@ -135,108 +133,25 @@
         echo "<br>";
         echo "Insert failed!";
     } else {
-        echo "Insert successful!";
+        echo "Insert successful! Refresh to see changes";
+        header("Refresh:0");
     }
   }
   ?>
 
   <div>
   <br><h2 style="text-align: center">All Cars</h2> <br>
-    <?php
-    include 'phpconfig.php';
-    // Connect to the database. Please change the password in the following line accordingly
-    session_start();
+  <h6 style="font-style: italic; text-align: center">With corresponding owners. Sorted by email of owner</h6>
 
-    $db     = $psql;
-    $result = pg_query($db, "SELECT * FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
-    $numcar = 1;
-    $cars = array();
-        echo '<table id = "myTableCars" class= "table">';
-        echo '<tr>
-            <td> # </td>
-            <td> Owner </td>
-            <td> Car ID </td>
-            <td> License Plate </td> 
-            <td> Car Type </td> 
-            <td>';
-        while($row = pg_fetch_assoc($result)){    // To store the result row
-            echo '<tr>
-            <td> '.$numcar.'</td>
-            <td> '.$row[emails].'</td>
-            <td> '.$row[carid].' </td>
-            <td> '.$row[licenseplate].' </td> 
-            <td> '.$row[cartype].' </td> 
-            <td>
-            <form name="display" action="admin.php" method="POST" >
-                <input type="submit" name="remove'.$numcar.'" value="Remove" />
-            </form>
-            </td>
-            </tr>';
-            array_push($cars,$row[carid]) ;
-            
-            if (isset($_POST['remove'.$numcar])) {
-                $num = $cars[$numcar-1];
-            $result = pg_query($db, "DELETE from cars where carid = '$num';");
-            if (!$result) {
-                echo "remove failed!!".$cars[$numcar-1];
-            } else {
-                echo "remove successful!";
-                header("Refresh:0");
-                }
-            }
-
-            $numcar+=1;
-
-        }
-        echo '</table>';
-
-        echo'<ul><form name="display" action="admin.php" method="POST" >
-                <input style="margin-top:30px" type="submit" name="add" value="Add A Car!" />
-            </form></ul>';
-
-        if (isset($_POST['add'])) {
-        echo "
-        <ul><form name='update' action='admin.php' method='POST' >
-        <strong>Car Licence: </strong> <input type='text' name='carlicence_add' required/> </br>
-        <strong>Car Type: </strong> <input type='text' name='cartype_add' required/>
-        <li><input type='submit' name='newcar' value= 'Add'/></li>
-        </form></ul>";
-        }
-
-         if (isset($_POST['newcar'])) { // Submit the update SQL command
-            $id = uniqid();
-            $result = pg_query($db, "BEGIN; INSERT INTO cars values('$id','$_POST[carlicence_add]','$_POST[cartype_add]'); INSERT INTO owns values('$email','$id'); COMMIT;");
-            if (!$result) {
-                echo "Add failed!!";
-            } else {
-                echo "Add successful!";
-                header("Refresh:0");
-            }
-        }
-    ?>
-  </div>
-
-
-  <div>
-    <br><h2 style="text-align: center">Bid Info (Per Ride)</h2> <br>
     <?php
     include 'phpconfig.php';
     session_start();
-    $email = $_SESSION['userID'];
+    $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db, "WITH bidcount AS (
-    SELECT ridesid, status, min(price) as minprice, count(*) as numbids
-    FROM bids
-    Where status = '0'
-    GROUP By ridesid, status
-    )
+    $result = pg_query($db, 
+    "SELECT emails AS carowner, carsid, licenseplate, cartype 
+    FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
 
-    SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, R.sidenote
-    FROM rides R FULL OUTER JOIN bidcount B on (R.rideid = B.ridesid)
-    ORDER BY R.dates, R.times, R.origin, R.destination, minbid
-    ;
-
-    ");
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
     while ($i < pg_num_fields($result))
@@ -268,25 +183,112 @@
     echo '</table>';
 
     ?>
+
+    <h4>Insert Car</h4>
+      <form name="registerFormCar" action="admin.php" method="POST">
+      <small class="error"> * required field</small>
+      <div class="form-row">
+          <input type="text" class="form-control-sm" id="email" placeholder="Enter email" name="email">
+          <input type="text" class="form-control-sm" id="carlicense" placeholder="Enter car license" name="carlicense">
+          <input type="text" class="form-control-sm" id="cartype" placeholder="Enter car type" name="cartype">
+          <input type="submit" class="btn btn-primary" value="Insert" name="insertCar"><br>
+      </div>
+      </form>
+    
+    <?php
+      include 'phpconfig.php';
+      $db     = $psql;
+      if (isset($_POST['insertCar'])){
+        $id = uniqid();
+        $result = pg_query($db, "
+        BEGIN; 
+        INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]'); 
+        INSERT INTO owns values('$_POST[email]','$id'); 
+        COMMIT;");
+        if (!$result) {
+            $failedresult = pg_send_query($db, "
+            BEGIN; 
+            INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]'); 
+            INSERT INTO owns values('$_POST[email]','$id'); 
+            COMMIT;");
+            echo pg_result_error(pg_get_result($db));
+            echo "<br>";
+            echo "Insert failed!";
+        } else {
+            echo "Insert successful! Refresh to see changes";
+            header("Refresh:0");
+        }
+      }
+    ?>
+
+
   </div>
 
-  <div>
-    <br><h2 style="text-align: center">Bid Info (Per Person)</h2> <br>
+   <div> 
+    <br><h2 style="text-align: center">Rides List</h2><br>
+    <?php
+      include 'phpconfig.php';
+      session_start();
+      $adminname = $_SESSION['sessionID'];
+      $db     = $psql;
+      $result = pg_query($db, 
+      "SELECT D.ridesid, D.email, D.carid, D.datess, D.timess, 
+      R.origin, R.destination, R.baseprice, R.capacity, R.sidenote
+      FROM drives D INNER JOIN rides R 
+        ON (D.ridesid = R.rideid 
+          AND D.datess = R.dates
+          AND D.timess = R.times)");
+      // print out table of bids
+      $i = 0;
+      echo '<table id = "myTable" class= "table"><tr>';
+      while ($i < pg_num_fields($result))
+      {
+        $fieldName = pg_field_name($result, $i);
+        echo '<td>' . $fieldName . '</td>';
+        $i = $i + 1;
+      }
+      echo '</tr>';
+      $i = 0;
+
+      while ($row = pg_fetch_row($result))
+      {
+        echo '<tr>';
+        $count = count($row);
+        $y = 0;
+        while ($y < $count)
+        {
+          $c_row = current($row);
+          echo '<td>' . $c_row . '</td>';
+          next($row);
+          $y = $y + 1;
+        }
+        echo '</tr>';
+        $i = $i + 1;
+      }
+      pg_free_result($result);
+
+      echo '</table>';
+
+    ?>
+  
+  </div>
+
+<div>
+    <h2 style="text-align: center">All Bids</h2><br>
+    <h6 style="font-style: italic; text-align: center">With corresponding ride info. Sorted by email</h6>
     <?php
     include 'phpconfig.php';
     session_start();
-    $email = $_SESSION['userID'];
+    $adminname = $_SESSION['sessionID'];
     $db     = $psql;
     $result = pg_query($db, "
-    SELECT B.emails AS UserEmail, B.price AS biddingprice, 
+    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice, 
     B.status, B.sidenote AS BidderSidenote,
-    R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
+    R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
     R.sidenote AS RideSideNote 
-    FROM rides R FULL OUTER JOIN bids B on (R.rideid = B.ridesid)
+    FROM rides R INNER JOIN bids B on (R.rideid = B.ridesid)
     ORDER BY B.emails
-    ;
-
-    ");
+    ;");
     // print out table of bids
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
@@ -320,4 +322,144 @@
 
     ?>
   </div>
+
+  <div>
+    <br><h2 style="text-align: center">All Rides</h2><br>
+    <h6 style="font-style: italic; text-align: center">With corresponding bid info. Sorted by rideid</h6>
+    <?php
+    include 'phpconfig.php';
+    session_start();
+    $adminname = $_SESSION['sessionID'];
+    $db     = $psql;
+    $result = pg_query($db, "WITH bidcount AS (
+    SELECT ridesid, status, min(price) AS minprice, count(*) AS numbids
+    FROM bids
+    WHERE status = '0'
+    GROUP By ridesid, status
+    )
+
+    SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, 
+      coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, 
+      R.sidenote
+    FROM rides R FULL OUTER JOIN bidcount B ON (R.rideid = B.ridesid)
+    ORDER BY R.rideid, R.dates, R.times, R.origin, R.destination, minbid
+    ;");
+    $i = 0;
+    echo '<table id = "myTable" class= "table"><tr>';
+    while ($i < pg_num_fields($result))
+    {
+      $fieldName = pg_field_name($result, $i);
+      echo '<td>' . $fieldName . '</td>';
+      $i = $i + 1;
+    }
+    echo '</tr>';
+    $i = 0;
+
+    while ($row = pg_fetch_row($result))
+    {
+      echo '<tr>';
+      $count = count($row);
+      $y = 0;
+      while ($y < $count)
+      {
+        $c_row = current($row);
+        echo '<td>' . $c_row . '</td>';
+        next($row);
+        $y = $y + 1;
+      }
+      echo '</tr>';
+      $i = $i + 1;
+    }
+    pg_free_result($result);
+
+    echo '</table>';
+
+    ?>
+  </div>
+
+  <div>
+    <br><h2 style="text-align: center">All Admins</h2><br>
+    <?php
+    include 'phpconfig.php';
+    session_start();
+    $adminname = $_SESSION['sessionID'];
+    $db     = $psql;
+    $result = pg_query($db, 
+    "SELECT * FROM admins;");
+    $i = 0;
+    echo '<table id = "myTable" class= "table"><tr>';
+    while ($i < pg_num_fields($result))
+    {
+      $fieldName = pg_field_name($result, $i);
+      echo '<td>' . $fieldName . '</td>';
+      $i = $i + 1;
+    }
+    echo '</tr>';
+    $i = 0;
+
+    while ($row = pg_fetch_row($result))
+    {
+      echo '<tr>';
+      $count = count($row);
+      $y = 0;
+      while ($y < $count)
+      {
+        $c_row = current($row);
+        echo '<td>' . $c_row . '</td>';
+        next($row);
+        $y = $y + 1;
+      }
+      echo '</tr>';
+      $i = $i + 1;
+    }
+    pg_free_result($result);
+
+    echo '</table>';
+
+    ?>
+  </div>
+
+  <div>
+    <br><h2 style="text-align: center">Management History</h2><br>
+    <?php
+    include 'phpconfig.php';
+    session_start();
+    $adminname = $_SESSION['sessionID'];
+    $db     = $psql;
+    $result = pg_query($db, 
+    "SELECT * FROM manages;");
+    $i = 0;
+    echo '<table id = "myTable" class= "table"><tr>';
+    while ($i < pg_num_fields($result))
+    {
+      $fieldName = pg_field_name($result, $i);
+      echo '<td>' . $fieldName . '</td>';
+      $i = $i + 1;
+    }
+    echo '</tr>';
+    $i = 0;
+
+    while ($row = pg_fetch_row($result))
+    {
+      echo '<tr>';
+      $count = count($row);
+      $y = 0;
+      while ($y < $count)
+      {
+        $c_row = current($row);
+        echo '<td>' . $c_row . '</td>';
+        next($row);
+        $y = $y + 1;
+      }
+      echo '</tr>';
+      $i = $i + 1;
+    }
+    pg_free_result($result);
+
+    echo '</table>';
+
+    ?>
+  </div>
+
+  
 </html>
