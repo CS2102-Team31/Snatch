@@ -19,6 +19,27 @@
          padding: 30px;
        }
   </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  * {
+      box-sizing: border-box;
+  }
+
+  /* Create two equal columns that floats next to each other */
+  .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+
+  }
+
+  /* Clear floats after the columns */
+  .row:after {
+      content: "";
+      display: table;
+      clear: both;
+  }
+  </style>
 </head>
 <body>
     <nav class="navbar navbar-dark" style="background-color: coral;">
@@ -38,6 +59,8 @@
     echo '<h1>' .$username. '\'s Rides</h1>';
   ?>
 
+<div class="row">
+<div class="column">
 
 <?php
 
@@ -47,10 +70,13 @@
     $email = $_SESSION['userID'];
     $db     = $psql;
 
-    $result = pg_query($db, "SELECT * FROM rides, (SELECT ridesid, carid FROM drives where email = '$email')as R where R.ridesid = rides.rideid;");
+    $result = pg_query($db, "SELECT * FROM cars, (SELECT * FROM rides, (SELECT ridesid, carid FROM drives where email = '$email')as R where R.ridesid = rides.rideid) as P
+                             WHERE cars.carid = P.carid;");
     $rides = array();
     $numride = 1;
     while($row = pg_fetch_assoc($result)){
+
+
         echo '<ul>
         <strong> Ride '.$numride.'</strong> </br>
         <strong> Ride ID: </strong>' .$row[rideid].'</br>
@@ -59,7 +85,7 @@
         <strong> Origin: </strong>' .$row[origin].'</br>
         <strong> Destination: </strong>' .$row[destination].'</br>
         <strong> Base Price: </strong>' .$row[baseprice].'</br>
-        <strong> Car: </strong>' .$row[carid].'</br>
+        <strong> Car: </strong>' .$row[licenseplate].'</br>
         <strong> Capacity: </strong>' .$row[capacity].'</br>
         <strong> Comments: </strong>' .$row[sidenote].'</br>
         <form name="display" action="createaride.php" method="POST" >
@@ -105,12 +131,12 @@
             <strong>Base Price: </strong> <input type='number' name='bp_updated' value='$row[baseprice]' min='1' required /></br>
             <strong>Car: </strong>";
 
-            $result1 = pg_query($db, "SELECT carsid FROM owns WHERE emails = '$email'");		// Query template
+            $result1 = pg_query($db, "SELECT * FROM owns, cars WHERE emails = '$email' and cars.carid = owns.carsid;");		// Query template
              while ($rows = pg_fetch_array($result1)) {
-                if($rows[carsid] == $row[carid]) {
-                   echo "<input type='radio' name='car_updated' value='$rows[carsid]' checked/>$rows[carsid]";
+                if($rows[licenseplate] == $row[licenseplate]) {
+                   echo "<input type='radio' name='car_updated' value='$rows[licenseplate]' checked/>$rows[licenseplate]";
                 } else {
-                   echo "<input type='radio' name='car_updated' value='$rows[carsid]' />$rows[carsid]";
+                   echo "<input type='radio' name='car_updated' value='$rows[licenseplate]' />$rows[licenseplate]";
                 }
              }
 
@@ -136,9 +162,9 @@
                 echo pg_result_error(pg_get_result($db));
                 echo "Update failed!!";
              } else {
-                $result = pg_query($db, "UPDATE drives SET carid = '$_POST[car_updated]' WHERE ridesid = '$num'");
+                $result = pg_query($db, "UPDATE drives SET carid = (SELECT carid FROM cars WHERE licenseplate = '$_POST[car_updated]') WHERE ridesid = '$num'");
                 if (!$result) {
-                    $failedresult = pg_send_query($db, "UPDATE drives SET carid = '$_POST[car_updated]' WHERE ridesid = '$num'");
+                    $failedresult = pg_send_query($db, "UPDATE drives SET carid = (SELECT carid FROM cars WHERE licenseplate = '$_POST[car_updated]') WHERE ridesid = '$num'");
 
                     echo pg_result_error(pg_get_result($db));
                     echo "Update failed!!";
@@ -149,76 +175,12 @@
              }
         }
 
-
-
-        /*////////print bids
-                $result = pg_query($db, "SELECT emails, price, sidenote, status FROM bids where ridesid = '$row[rideid]' ORDER BY status desc, emails asc;");
-
-                $bids = array('$j' => array());
-                $numbid = 1;
-                $j = $i + 1;
-                while($rows = pg_fetch_assoc($result)){
-                    if($rows[status] == 0) {
-                        echo '<ul>
-                        <strong> Bid '.$j.'-'.$numbid.'</strong> </br>
-                        <strong> Email: </strong>' .$rows[emails].'</br>
-                        <strong> Price: </strong>' .$rows[price].'</br>
-                        <strong> Comments: </strong>' .$rows[sidenote].'</br>
-
-                        <form name="display" action="createaride.php" method="POST" >
-                          <input type="submit" name="'.$j.'choose'.$numbid.'" value="Select" />
-                        </form></ul>';
-                    } else {
-                        echo '<ul>
-                        <strong> Bid '.$j.'-'.$numbid.' (CHOSEN)</strong> </br>
-                        <strong> Email: </strong>' .$rows[emails].'</br>
-                        <strong> Price: </strong>' .$rows[price].'</br>
-                        <strong> Comments: </strong>' .$rows[sidenote].'</br>
-
-                        <form name="display" action="createaride.php" method="POST" >
-                          <input type="submit" name="'.$j.'unchoose'.$numbid.'" value="Deselect" />
-                        </form></ul>';
-                    }
-
-                    array_push($bids['$j'], $rows[emails]);
-
-                    if (isset($_POST[$j.'choose'.$numbid])) {
-                        $num = $bids['$j'][$numbid - 1];
-                        $result = pg_query($db, "UPDATE bids SET status = 1 WHERE emails = '$num' and ridesid = '$row[rideid]';");
-                        if(!$result) {
-                            $failedresult = pg_send_query($db, "UPDATE bids SET status = 1 WHERE emails = '$num' and ridesid = '$row[rideid]';");
-
-                            echo pg_result_error(pg_get_result($db));
-                            echo "Choose ride failed";
-                        } else {
-
-                                echo "Choose ride successful";
-                                //echo ($num == "") ? "null" : $num;
-                                header("Refresh:0");
-                        }
-                    }
-
-                    if (isset($_POST[$j.'unchoose'.$numbid])) {
-                        $num = $bids['$j'][$numbid - 1];
-                        $result = pg_query($db, "UPDATE bids SET status = 0 WHERE emails = '$num' and ridesid = '$row[rideid]';");
-                        if(!$result) {
-                            $failedresult = pg_send_query($db, "UPDATE bids SET status = 0 WHERE emails = '$num' and ridesid = '$row[rideid]';");
-
-                            echo pg_result_error(pg_get_result($db));
-                            echo "Choose ride failed";
-                        } else {
-                            echo "Unchoose ride successful";
-                            //echo ($num == "") ? "null" : $num;
-                            header("Refresh:0");
-                        }
-                    }
-
-                    $numbid += 1;
-                }*/
-
         $numride += 1;
     }
         ?>
+
+</div>
+<div class="column">
 
 <?php
     //print bids
@@ -230,6 +192,7 @@
 
     for ($i = 0; $i < count($rides); $i++) {
         $rideid = $rides[$i];
+        $capacity = pg_fetch_assoc(pg_query($db, "SELECT capacity FROM rides WHERE rideid = '$rideid';"))[capacity];
         $result = pg_query($db, "SELECT emails, price, sidenote, status FROM bids where ridesid = '$rideid' ORDER BY status desc, emails asc;");
 
         $bids = array('$j' => array());
@@ -247,6 +210,7 @@
                   <input type="submit" name="'.$j.'choose'.$numbid.'" value="Select" />
                 </form></ul>';
             } else {
+                $capacity = $capacity - 1;
                 echo '<ul>
                 <strong> Bid '.$j.'-'.$numbid.' (CHOSEN)</strong> </br>
                 <strong> Email: </strong>' .$row[emails].'</br>
@@ -261,22 +225,27 @@
             array_push($bids['$j'], $row[emails]);
 
             if (isset($_POST[$j.'choose'.$numbid])) {
-                $num = $bids['$j'][$numbid - 1];
-                $result = pg_query($db, "UPDATE bids SET status = 1 WHERE emails = '$num' and ridesid = '$rideid';");
-                if(!$result) {
-                    $failedresult = pg_send_query($db, "DELETE FROM drives where ridesid  = '$num'");
+                if($capacity > 0) {
+                    $num = $bids['$j'][$numbid - 1];
+                    $result = pg_query($db, "UPDATE bids SET status = 1 WHERE emails = '$num' and ridesid = '$rideid';");
+                    if(!$result) {
+                        $failedresult = pg_send_query($db, "DELETE FROM drives where ridesid  = '$num'");
 
-                    echo pg_result_error(pg_get_result($db));
-                    echo "Choose ride failed";
-                } else {
+                        echo pg_result_error(pg_get_result($db));
+                        echo "Choose ride failed";
+                    } else {
 
                         echo "Choose ride successful";
                         //echo ($num == "") ? "null" : $num;
                         header("Refresh:0");
+                    }
+                } else {
+                    echo "You do not have enough capacity to select more passengers. Please deselect another passenger first.";
                 }
             }
 
             if (isset($_POST[$j.'unchoose'.$numbid])) {
+                $capacity = $capacity + 1;
                 $num = $bids['$j'][$numbid - 1];
                 $result = pg_query($db, "UPDATE bids SET status = 0 WHERE emails = '$num' and ridesid = '$rideid';");
                 if(!$result) {
@@ -295,16 +264,12 @@
         }
     }
             ?>
+</div>
+</div>
+<div class="row">
+<div class="column">
 
-
-
-
-
-
-
-
-
-  <h1>Create A Ride</h1>
+  <h2>Create A Ride</h2>
 
   <?php
     	// Connect to the database. Please change the password in the following line accordingly
@@ -312,7 +277,7 @@
       session_start();
       $email = $_SESSION['userID'];
       $db     = $psql;
-        $result = pg_query($db, "SELECT carsid FROM owns WHERE emails = '$email'");		// Query template
+        $result = pg_query($db, "SELECT * FROM owns, cars WHERE owns.emails = '$email' and cars.carid = owns.carsid");		// Query template
 
 
 
@@ -331,7 +296,7 @@
       <li>Car:</li>";
 
       while ($row = pg_fetch_array($result)) {
-        echo "<li><input type='radio' name='car' value='$row[carsid]' />$row[carsid]</li>";
+        echo "<li><input type='radio' name='car' value='$row[licenseplate]' />$row[licenseplate]</li>";
       }
 
       echo "
@@ -360,7 +325,7 @@
             echo "Creating ride failed!";
 
         } else {
-            $result1 = pg_query($db, "INSERT INTO drives values('$email', '$rideid', '$_POST[car]', '$_POST[dates]', '$_POST[times]');");
+            $result1 = pg_query($db, "INSERT INTO drives values('$email', '$rideid', (SELECT carid FROM cars WHERE licenseplate = '$_POST[car]'), '$_POST[dates]', '$_POST[times]');");
             if(!$result) {
                 echo "Creating ride failed!!";
             } else {
@@ -371,8 +336,8 @@
     }
 
   ?>
-
-
+</div>
+</div>
 
 </body>
 </html>
