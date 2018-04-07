@@ -345,7 +345,7 @@
 
     if (isset($_POST['CreateARide'])) {
         $rideid = uniqid('ride');
-        $_POST[sidenote] = !empty($_POST[sidenote]) ? "'$_POST[sidenote]'" : "null";
+        $_POST[sidenote] = !empty($_POST[sidenote]) ? "'$_POST[sidenote]'" : 'null';
 
         $result = pg_query($db, "INSERT INTO rides values('$rideid', '$_POST[dates]', '$_POST[times]',
         '$_POST[origin]', '$_POST[destination]', '$_POST[basePrice]', '$_POST[capacity]',
