@@ -56,9 +56,11 @@ CREATE TABLE owns (
     carsid VARCHAR(100),
     primary key(emails, carsid),
     foreign key(emails) references users(email)
+        on UPDATE CASCADE
         on DELETE CASCADE,
     foreign key(carsid) references cars(carid)
-        on DELETE CASCADE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 -- User drives rides
@@ -70,8 +72,10 @@ CREATE TABLE drives (
     timess TIME not null,
     primary key(email, datess, timess),
     foreign key(email, carid) references owns(emails, carsid)
+        on UPDATE CASCADE
         on DELETE CASCADE,
     foreign key(ridesid, datess, timess) references rides(rideid, dates, times)
+        on UPDATE CASCADE
         on DELETE CASCADE
 );
 
@@ -84,8 +88,10 @@ CREATE TABLE bids (
     sidenote TEXT,
     primary key(emails, ridesid),
     foreign key(emails) references users(email)
+        on UPDATE CASCADE
         on DELETE CASCADE,
     foreign key(ridesid) references rides(rideid)
+        on UPDATE CASCADE
         on DELETE CASCADE
 );
 
@@ -96,6 +102,7 @@ CREATE TABLE manages (
     typeid VARCHAR(100) not null,
     history VARCHAR(32) not null,
     foreign key(adminsid) references admins(adminid)
+        on UPDATE CASCADE
         on DELETE CASCADE
 );
 

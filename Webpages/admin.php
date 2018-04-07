@@ -216,9 +216,6 @@
     $row    = pg_fetch_assoc($result);	  
 
     if (isset($_POST['submitUserModify'])) {
-      echo "fuck<br>";
-      echo $_POST['emailToModify'] . "<br>";
-      echo $row[username];
       if ($row[gender] == null) {
         $gender1 = 'Male';
         $gender2 = 'Female';
@@ -430,23 +427,22 @@
     $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
           FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid WHERE licenseplate = '$_POST[lcToModify]';");
     $row    = pg_fetch_assoc($result);	  
+    $old_licenseplate = $_POST[lcToModify];
 
     if (isset($_POST['submitCarModify'])) {
-      echo "fuck<br>";
-      echo $_POST['lcToModify'] . "<br>";
-      echo $row[licenseplate];
+
       // Display form to modify info
       echo "
       <ul>
         <form name='update' action='admin.php' method='POST' >
           <strong>Email of Owner: </strong> <input type='text' name='carowner_updated' value='$row[carowner]'/> </br>
           <strong>CarsID: </strong> <input type='text' name='carsid_updated' value='$row[carsid]'/> </br>
-          <strong>License Plate: </strong> <input type='text' name='lc_updated' value='$row[licenseplate]'/> </br>
+          <strong>License Plate (old): </strong> <input type='text' name='lc_old' value='$row[licenseplate]' readonly/> </br>
+          <strong>License Plate (new): </strong> <input type='text' name='lc_updated' value='$row[licenseplate]'/> </br>
           <strong>Car Type: </strong> <input type='text' name='cartype_updated' value='$row[cartype]'/> </br>
           <li><input type='submit' name='newCar' value= 'Modify'/></li>
         </form>
       </ul>";
-
     }
 
     // PHP Logic to do an Update Query on SQL
@@ -456,7 +452,7 @@
                                 SET carid = '$_POST[carsid_updated]',
                                     licenseplate = '$_POST[lc_updated]', 
                                     cartype = '$_POST[cartype_updated]' 
-                                WHERE licenseplate = '$_POST[lc_updated]';"
+                                WHERE licenseplate = '$_POST[lc_old]';"
       );
       if (!$result) {
           $failedresult = pg_send_query($db,"
@@ -464,7 +460,78 @@
                                 SET carid = '$_POST[carsid_updated]',
                                     licenseplate = '$_POST[lc_updated]', 
                                     cartype = '$_POST[cartype_updated]' 
-                                WHERE licenseplate = '$_POST[lc_updated]';"
+                                WHERE licenseplate = '$_POST[lc_old]';"                                    
+          );
+          echo "old_lc: ". $_POST[lc_old] . "<br>";
+          echo pg_result_error(pg_get_result($db));
+          echo "Modify failed!!";
+      } else {
+          echo "old_lc: ". $_POST[lc_old] . "<br>";
+          echo "Modify successful! Refresh to see changes";
+          header("Refresh:0");
+      }
+    }   
+  ?>
+
+  <!-- Modify -->
+  <h4>Transfer Ownership</h4>
+  
+  <!-- Modify Form -->
+  <form name="formTransferCar" id="formTransferCar" action="" method="POST">
+      <select class="form-control form-control-sm" name='lcToTransfer' id = 'lcTransfer' >
+        <option value="">--- Select license plate of car to change owner ---</option>
+        <?php
+        // This is the db to connect to
+        include 'phpconfig.php';
+        $db     = $psql;
+        $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
+          FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
+
+        while ($row = pg_fetch_array($result)) {
+          echo "<option value='" . $row['licenseplate'] ."'>" . $row['licenseplate'] ."</option>";
+        }
+        ?>
+      </select>
+      <input type="submit" class="btn btn-primary" value="Transfer" name="submitCarTransfer"><br>
+  </form>
+
+  <!-- Modify PHP Logic -->  
+  <?php
+    include 'phpconfig.php';
+    session_start();
+    $db = $psql;
+    $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
+          FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid WHERE licenseplate = '$_POST[lcToTransfer]';");
+    $row    = pg_fetch_assoc($result);	  
+    $old_licenseplate = $_POST[lcToTransfer];
+
+    if (isset($_POST['submitCarTransfer'])) {
+      // Display form to modify info
+      echo "
+      <ul>
+        <form name='update' action='admin.php' method='POST' >
+          <strong>Email of Old Owner: </strong> <input type='text' name='carowner_old' value='$row[carowner]' readonly/> </br>
+          <strong>Email of New Owner: </strong> <input type='text' name='carowner_updated' value='$row[carowner]'/> </br>
+          <strong>CarsID: </strong> <input type='text' name='carsid_same' value='$row[carsid]' readonly/> </br>
+          <li><input type='submit' name='changeOwner' value= 'Transfer'/></li>
+        </form>
+      </ul>";
+    }
+
+    // PHP Logic to do an Update Query on SQL
+    if (isset($_POST['changeOwner'])) {  // Submit the update SQL command
+      $result = pg_query($db, "
+                                UPDATE owns 
+                                SET emails = '$_POST[carowner_updated]',
+                                    carsid = '$_POST[carsid_same]'
+                                WHERE emails = '$_POST[carowner_old]';"
+      );
+      if (!$result) {
+          $failedresult = pg_send_query($db,"
+                                UPDATE owns 
+                                SET emails = '$_POST[carowner_updated]',
+                                    carsid = '$_POST[carsid_same]'
+                                WHERE emails = '$_POST[carowner_old]';"                                
           );
           echo pg_result_error(pg_get_result($db));
           echo "Modify failed!!";
@@ -475,6 +542,41 @@
     }   
   ?>
 
+  <!-- Modify -->
+  <h4>Transfer Car</h4>
+  <form name="fromTransferCar" action="admin.php" method="POST">
+      <div class="form-row">
+          <input type="text" class="form-control-sm" id="carowner_same" placeholder="Enter email of owner" name="carowner_same">
+          <input type="text" class="form-control-sm" id="carsid_old" placeholder="Enter old car id" name="carsid_old">
+          <input type="text" class="form-control-sm" id="carsid_new" placeholder="Enter new car id" name="carsid_new">
+          <input type="submit" class="btn btn-primary" value="Transfer" name="changeCar"><br>
+      </div>
+    </form>
+  
+    <?php
+    // PHP Logic to do an Update Query on SQL
+    if (isset($_POST['changeCar'])) {  // Submit the update SQL command
+      $result = pg_query($db, "
+                                UPDATE owns 
+                                SET emails = '$_POST[carowner_same]',
+                                    carsid = '$_POST[carsid_new]'
+                                WHERE carsid = '$_POST[carsid_old]';"
+      );
+      if (!$result) {
+          $failedresult = pg_send_query($db,"
+                                UPDATE owns 
+                                SET emails = '$_POST[carowner_same]',
+                                    carsid = '$_POST[carsid_new]'
+                                WHERE carsid = '$_POST[carsid_old]';"                             
+          );
+          echo pg_result_error(pg_get_result($db));
+          echo "Modify failed!!";
+      } else {
+          echo "Modify successful! Refresh to see changes";
+          header("Refresh:0");
+      }
+    }   
+    ?>
 
   </div>
 
