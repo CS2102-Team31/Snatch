@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>UPDATE PostgreSQL data with PHP</title>
+  <title>Ride bidding</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style>
   .error {
@@ -49,13 +49,20 @@
     echo 'Destination:<input type="text" class="form-control" id="myDest" onkeyup="bidFilter()" placeholder="Filter by destination.."> <br>';
 
     $i = 0;
-    echo '<table id = "myTable" class= "table"><tr>';
-    while ($i < pg_num_fields($result))
+    echo '<table id = "bidTable" class= "table"><tr>';
+    while ($i <= pg_num_fields($result))
     {
-      $fieldName = pg_field_name($result, $i);
-      echo '<td>' . $fieldName . '</td>';
+      if ( $i < pg_num_fields($result)){
+        $fieldName = pg_field_name($result, $i);
+        echo '<td>' . $fieldName . '</td>';
+        $i = $i + 1;
+    }
+    else {
+      echo '<td>' . "Choose a ride" . '</td>';
       $i = $i + 1;
     }
+    }
+
     echo '</tr>';
     $i = 0;
 
@@ -64,12 +71,18 @@
       echo '<tr>';
       $count = count($row);
       $y = 0;
-      while ($y < $count)
+      while ($y <= $count)
       {
-        $c_row = current($row);
-        echo '<td>' . $c_row . '</td>';
+        if( $y < $count) {
+          $c_row = current($row);
+          echo '<td>' . $c_row . '</td>';
+          next($row);
+      }
+      else {
+        echo '<td>' . '<input type="button" style="text-align: center" value="Select" onclick="GetCellValues($i);">' . '</td>';
         next($row);
-        $y = $y + 1;
+      }
+      $y = $y + 1;
       }
       echo '</tr>';
       $i = $i + 1;
@@ -137,15 +150,17 @@
     }
     if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has already bid for ride, else insert.
       if($_POST[bid] >= $_POST[baseprice]) {
-        $sidenote = ($_POST[sidenote] == "") ? "null" : '$_POST[sidenote]';
-        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = $sidenote WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
+        $sidenote = ($_POST[sidenote] == "") ? "null" : $_POST[sidenote];
+        $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = '$sidenote' WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
           INSERT INTO bids
-          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, $sidenote
+          SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, '$sidenote'
           WHERE NOT EXISTS (SELECT 1 FROM bids WHERE emails = '$email' and ridesid = '$_POST[rideid]');");
           if (!$result) {
             echo "Bid failed!!";
           } else {
-            echo "Bid successful!";
+            header("Refresh:0");
+            $message = "Bid successful!";
+            echo "<script type='text/javascript'>alert('$message');</script>";
           }
         } else {
           echo "Bid failed. Bid price lower than base price!";
@@ -166,7 +181,7 @@
     input2 = document.getElementById("myDest");
     filter = input.value.toUpperCase();
     filter2 = input2.value.toUpperCase();
-    table = document.getElementById("myTable");
+    table = document.getElementById("bidTable");
     tr = table.getElementsByTagName("tr");
 
     // Loop through all table rows, and hide those who don't match the search query
@@ -182,6 +197,13 @@
       }
     }
   }
+
+function GetCellValues(i) {
+    var table = document.getElementById('bidTable');
+    alert("hello ");
+
+    }
+}
 
 </script>
 </html>
