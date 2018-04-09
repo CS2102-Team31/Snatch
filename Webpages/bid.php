@@ -40,15 +40,44 @@
     session_start();
     $email = $_SESSION['userID'];
     $db     = $psql;
-    $result = pg_query($db, "with bidcount as (
-    SELECT ridesid, status, min(price) as minprice, count(*) as numbids
-    FROM bids
-    Where status = '0'
-    GROUP By ridesid, status
+    $result = pg_query($db, "
+    with bidrank as (
+      SELECT rideid, capacity, price, RANK() OVER(PARTITION BY rideid ORDER BY price) AS rnk
+      FROM bids inner join rides on bids.ridesid = rides.rideid
+    ),
+    bidcount as (
+      SELECT ridesid, status, count(*) as numbids
+      FROM bids
+      Where status = '0'
+      GROUP By ridesid, status
+    ),
+    biddiff as (
+      SELECT ridesid, sum(numbids - capacity) as diff
+      FROM bidcount inner join rides on ridesid = rideid
+      group by ridesid
+    ),
+    validbids as (
+      SELECT *
+      FROM biddiff inner join bidrank on ridesid = rideid
+      WHERE rnk > diff
+    ),
+    minbidtable as (
+      SELECT rideid, capacity, price, rnk
+      FROM (
+          SELECT rideid, capacity, price, rnk, row_number()
+                 over (partition by rideid order by rnk asc) as rn
+          FROM validbids
+      ) AS T
+      WHERE rn = 1
+    ),
+
+    bidcountmin as (
+      SELECT ridesid, status, price as minprice, numbids
+      FROM bidcount inner join minbidtable on rideid = ridesid
     )
 
     SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, R.sidenote
-    FROM rides R full outer join bidcount B on (R.rideid = B.ridesid)
+    FROM rides R full outer join bidcountmin B on (R.rideid = B.ridesid)
     Order by R.dates, R.times, R.origin, R.destination, minbid
     ;
 
@@ -57,19 +86,18 @@
     echo 'Origin:<input type="text" class="form-control" id="myOrigin" onkeyup="bidFilter()" placeholder="Filter by origin..">';
     echo 'Destination:<input type="text" class="form-control" id="myDest" onkeyup="bidFilter()" placeholder="Filter by destination.."> <br>';
 
-    $i = 0;
+
     echo '<table id = "bidTable" class= "table"><tr>';
-    while ($i <= pg_num_fields($result))
-    {
-      if ( $i < pg_num_fields($result)){
-        $fieldName = pg_field_name($result, $i);
-        echo '<td>' . $fieldName . '</td>';
-        $i = $i + 1;
-      }
-      else {
-        $i = $i + 1;
-      }
-    }
+    echo '<td> Ride ID </td>';
+    echo '<td> Date </td>';
+    echo '<td> Time </td>';
+    echo '<td> Origin </td>';
+    echo '<td> Destination </td>';
+    echo '<td> Base Bidding Price </td>';
+    echo '<td> Ride Capacity </td>';
+    echo '<td> Number of bids </td>';
+    echo '<td> Current Lowest bid </td>';
+    echo '<td> Side notes </td>';
 
     echo '</tr>';
     $i = 0;
@@ -128,8 +156,8 @@ include 'phpconfig.php';
 $db     = $psql;
 session_start();
 $email = $_SESSION['userID'];
-$id = intval($_GET['id']);
-if($id > 0){
+$id = strval($_GET['id']);
+if($id != null){
   $result = pg_query($db, "SELECT * FROM rides where rideid = '$id'");
 }
 else{
@@ -140,7 +168,7 @@ $row    = pg_fetch_assoc($result);		// To store the result row
 $location_id = filter_input(INPUT_POST, 'locationID', FILTER_SANITIZE_NUMBER_INT);
 
 
-if (isset($_POST['submitRideId']) || $id > 0) {
+if (isset($_POST['submitRideId']) || $id != null ) {
 
   echo "
   <form name='bid' method='POST'>
@@ -174,7 +202,7 @@ if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has
       if (!$result) {
         echo "Bid failed!!";
       } else {
-        header("Refresh:0");
+        header("Refresh:0; url=bid.php");
         $message = "Bid successful!";
         echo "<script type='text/javascript'>alert('$message');</script>";
       }
