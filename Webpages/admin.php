@@ -170,7 +170,7 @@
   <div>
 
   <!-- Delete -->
-  <h4>Delete User 1</h4>
+  <h4>Delete User</h4>
   
   <!-- Deletion Form -->
   <form name="formDeleteUser" id="formDeleteUser" action="" method="POST">
@@ -206,8 +206,7 @@
     $db = $psql;
     if (isset($_POST['submitUserDelete'])) {
       $result = pg_query($db, "DELETE FROM users where email = '$_POST[emailToDelete]';
-                                DELETE FROM rides R WHERE NOT EXISTS ( SELECT 1 FROM drives D where R.rideid = D.ridesid);
-                                DELETE FROM cars C WHERE NOT EXISTS ( SELECT 1 FROM drives D where C.carid = D.carid);");
+                                DELETE FROM rides R WHERE NOT EXISTS ( SELECT 1 FROM drives D where R.rideid = D.ridesid);");
       if (!$result) {
           echo "Delete failed!!";
       } else {
@@ -1320,114 +1319,8 @@ if (isset($_POST['insertRide'])) {
       ?>
 
     <h4>Modify Bid</h4>
-
-    <form name="form2" id="form2" action="" method="POST">
-        Email:<br>
-        <input type='text' name='email' ><br>
-        <select name='rideid' id = 'rideid' >
-          <option value="">--- Select Ride ID ---</option>
-          <?php
-            // This is the db to connect to
-            include 'phpconfig.php';
-            $db     = $psql;
-            $result = pg_query($db, "SELECT rideid FROM rides");    // Query template
-
-
-            while ($row = pg_fetch_array($result)) {
-              echo "<option value='" . $row['rideid'] ."'>" . $row['rideid'] ."</option>";
-            }
-          ?>
-        </select>
-        <input type="submit" style="text-align: center" value="Modify Bid" name="submitBidToModify"><br>
-      </form>
-
-     <?php
-        // This is the db to connect to
-        include 'phpconfig.php';
-        $db     = $psql;
-
-        /*Admin*/
-        session_start();
-        $adminname = $_SESSION['sessionID'];
-        $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);  
-        $adminid = $row[adminid];
-        /*endAdmin*/
-
-
-
-        if (isset($_POST['submitBidToModify'])) {
-          $result = pg_query($db, "SELECT * FROM bids where emails = '$_POST[email]' AND ridesid = '$_POST[rideid]';");
-          $row    = pg_fetch_assoc($result);  
-
-          $a = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");   // Query template
-          $b    = pg_fetch_assoc($a); 
-
-           if ($row[status] == 1) {
-                $status1 = 'Accepted';
-                $status2 = 'Pending';
-            } else if($row[status] == 0) {
-                 $status1 = 'Pending';
-                 $status2 = 'Accepted';
-            } 
-
-           echo "
-                  <ul>
-                    <form name='newbidform' method='POST' >
-                     <strong> email: </strong><input type='text' name='rideremail' value='$_POST[email]'/></br>
-                      <strong> rideid: </strong><input type='text' name='ridesid' value='$_POST[rideid]'/></br>
-                      <strong> base price of ride: </strong>$b[baseprice]</br>
-                      <strong>price: </strong> <input type='integer' name='price_updated' value='$row[price]'/> </br>
-                      <strong>status: </strong> <input type='radio' name='status_updated' value='$status1' checked /> $status1                                                <input type='radio' name='status_updated' value='$status2' /> $status2</br>
-                      <strong>sidenote: </strong> <input type='text' name='sidenote_updated' value='$row[sidenote]'/></br>
-                      <li><input type='submit' name='biddingModification' value= 'Modify'/></li>
-                    </form>
-                  </ul>";
-
-              }
-
-                     if (isset($_POST['biddingModification'])) { 
-                       $state = ($_POST[status_updated] == 'Accepted') ? 1 : 0;
-                        echo $_POST[status_updated];
-
-                        if($state == 1){ $status = 1; }else{ $status = 0; }
-
-                         $sidenote = ($_POST[sidenote_updated] == "") ? "null" : "'$_POST[sidenote_updated]'";
-                         if($_POST[price_updated] < $b[baseprice]){ 
-
-                          echo "Bid was below base price";
-
-                           }else{
-                          $result = pg_query($db, "UPDATE bids SET price = '$_POST[price_updated]', sidenote = $sidenote , status = $status WHERE ridesid = '$_POST[ridesid]' AND emails = '$_POST[rideremail]'");
-                          if (!$result) {
-                              $failedresult = pg_send_query($db, "UPDATE bids SET price = '$_POST[bid_updated]', sidenote = $sidenote , status = $status WHERE ridesid = '$_POST[ridesid]' AND emails = $_POST[rideremail]");
-
-                              echo pg_result_error(pg_get_result($db));
-                              echo "Update failed!!";
-                          } else {
-                              echo "Update successful!";
-                               /*Admin*/
-                              echo '<br>Modified as '.$adminid." ";
-                              $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                        VALUES ('$adminid', 'User', '$_POST[email]', 'Modify Bid')
-                                                ");
-                              if (!$result) {
-                                $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                                      VALUES ('$adminid', 'User', '$_POST[email], 'Modify Bid')
-                                                              ");
-                                echo pg_result_error(pg_get_result($db));
-                                echo "<br>";
-                                echo "Admin fail";
-                              } else {
-                                echo "Admin pass";
-                              }
-                              /*Admin*/
-                              header("Refresh:0");
-                          }
-
-             }
-           }
-      ?>
+    <!-- TODO: For Renee -->
+    <!-- TODO: Given a userinput email and ride id::: can modify price, status and sidenote -->
 
 </div>
 
