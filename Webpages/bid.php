@@ -106,9 +106,9 @@
     echo '<td> Destination </td>';
     echo '<td> Base Bidding Price </td>';
     echo '<td> Ride Capacity </td>';
-    echo '<td> Number of bids </td>';
-    echo '<td> Current Lowest bid </td>';
-    echo '<td> Side notes </td>';
+    echo '<td> Number of Bids </td>';
+    echo '<td> Lowest Winning Bid </td>';
+    echo '<td> Side Notes </td>';
 
     echo '</tr>';
     $i = 0;
