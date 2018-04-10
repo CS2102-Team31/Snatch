@@ -194,7 +194,7 @@ if (isset($_POST['submitRideId']) || $id != null ) {
 }
 if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has already bid for ride, else insert.
   if($_POST[bid] >= $_POST[baseprice]) {
-    $sidenote = ($_POST[sidenote] == "") ? "null" : $_POST[sidenote];
+    $sidenote = ($_POST[sidenote] == "") ? null : $_POST[sidenote];
     $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = '$sidenote' WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
       INSERT INTO bids
       SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, '$sidenote'
