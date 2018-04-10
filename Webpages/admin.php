@@ -29,11 +29,11 @@
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");    // need to replace the uid accordingly
-    $row    = pg_fetch_assoc($result);
-
+    $row    = pg_fetch_assoc($result);  
+  
     echo '<br><h1 style="text-align: center">Hello '.$row[adminname].', '.$row[employeename].'</h1><br>';
   ?>
-
+  
   </div>
 
   <div>
@@ -42,8 +42,8 @@
     include 'phpconfig.php';
     session_start();
     $db     = $psql;
-    $result = pg_query($db,
-    "SELECT U.email, U.username, U.pwd, U.phone, U.gender, U.bday, U.driverlicense
+    $result = pg_query($db, 
+    "SELECT U.email, U.username, U.pwd, U.phone, U.gender, U.bday, U.driverlicense 
     FROM Users U;");
 
     $i = 0;
@@ -89,7 +89,7 @@
           <input type="text" class="form-control-sm" id="email" placeholder="Enter email*" name="email">
           <input type="text" class="form-control-sm" id="name" placeholder="Enter username*" name="name">
           <input type="password" class="form-control-sm" id="password" placeholder="Enter password*" name="password">
-          <input type="text" class="form-control-sm" id="phone" placeholder="Enter phone number*" name="phone">
+          <input type="text" class="form-control-sm" id="phone" placeholder="Enter phone number*" name="phone"> 
 
           <div class="form-check-inline">
           <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="Male" checked>
@@ -106,11 +106,11 @@
           <div class="form-check-inline">
           <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="None">
           <label class="form-check-label" for="exampleRadios2">
-              None
+              None     
           </label>
           </div>
           <input type="date" class="form-control-sm" id="birthday" placeholder="Enter birthday YYYY-MM-DD" name="birthday">
-          <input type="text" class="form-control-sm" id="driver_license" placeholder="Enter driver license" name="driver_license">
+          <input type="text" class="form-control-sm" id="driver_license" placeholder="Enter driver license" name="driver_license"> 
           <br>
           <input type="submit" class="btn btn-primary" value="Insert" name="registerUser"><br>
       </div>
@@ -123,7 +123,7 @@
   session_start();
   $adminname = $_SESSION['sessionID'];
   $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-  $row    = pg_fetch_assoc($result);
+  $row    = pg_fetch_assoc($result);  
   $adminid = $row[adminid];
   /*endAdmin*/
 
@@ -171,7 +171,7 @@
 
   <!-- Delete -->
   <h4>Delete User 1</h4>
-
+  
   <!-- Deletion Form -->
   <form name="formDeleteUser" id="formDeleteUser" action="" method="POST">
       <select class="form-control form-control-sm" name='emailToDelete' id = 'emailToDelete' >
@@ -197,7 +197,7 @@
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
@@ -238,7 +238,7 @@
 
   <!-- Modify -->
   <h4>Modify User</h4>
-
+  
   <!-- Modify Form -->
   <form name="formModifyUser" id="formModifyUser" action="" method="POST">
       <select class="form-control form-control-sm" name='emailToModify' id = 'emailToModify' >
@@ -257,21 +257,21 @@
       <input type="submit" class="btn btn-primary" value="Modify" name="submitUserModify"><br>
   </form>
 
-  <!-- Modify PHP Logic -->
+  <!-- Modify PHP Logic -->  
   <?php
     /*Admin*/
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
     include 'phpconfig.php';
     session_start();
     $db = $psql;
-    $result = pg_query($db, "SELECT * FROM users where email = '$_POST[emailToModify]'");
-    $row    = pg_fetch_assoc($result);
+    $result = pg_query($db, "SELECT * FROM users where email = '$_POST[emailToModify]'");	
+    $row    = pg_fetch_assoc($result);	  
 
     if (isset($_POST['submitUserModify'])) {
       if ($row[gender] == null) {
@@ -310,12 +310,12 @@
       $gender3 = ($_POST[gender_updated] == 'None') ? 'null' : "'$_POST[gender_updated]'";
       $bday = ($_POST[bday_updated] == null) ? 'null' : "'$_POST[bday_updated]'";
       $dl = ($_POST[dl_updated] == null) ? 'null' : "'$_POST[dl_updated]'";
-      $result = pg_query($db, "UPDATE users
+      $result = pg_query($db, "UPDATE users 
                                 SET username = '$_POST[name_updated]',
-                                    gender = $gender3,
+                                    gender = $gender3, 
                                     bday = $bday,
                                     driverLicense = $dl,
-                                    phone = '$_POST[phone_updated]'
+                                    phone = '$_POST[phone_updated]' 
                                 WHERE email = '$_POST[email_updated]'"
       );
       if (!$result) {
@@ -343,10 +343,10 @@
 
           header("Refresh:0");
       }
-    }
+    }   
   ?>
   </div>
-
+ 
   <div>
   <br><h2 style="text-align: center">All Cars</h2> <br>
   <h6 style="font-style: italic; text-align: center">With corresponding owners. Sorted by email of owner</h6>
@@ -356,8 +356,8 @@
     session_start();
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db,
-    "SELECT emails AS carowner, carsid, licenseplate, cartype
+    $result = pg_query($db, 
+    "SELECT emails AS carowner, carsid, licenseplate, cartype 
     FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
 
     $i = 0;
@@ -405,7 +405,7 @@
           <input type="submit" class="btn btn-primary" value="Insert" name="insertCar"><br>
       </div>
     </form>
-
+    
     <!-- PHP Logic Insertion -->
     <?php
 
@@ -413,7 +413,7 @@
       session_start();
       $adminname = $_SESSION['sessionID'];
       $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-      $row    = pg_fetch_assoc($result);
+      $row    = pg_fetch_assoc($result);  
       $adminid = $row[adminid];
       /*endAdmin*/
 
@@ -424,15 +424,15 @@
       if (isset($_POST['insertCar'])){
         $id = uniqid();
         $result = pg_query($db, "
-        BEGIN;
-        INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]');
-        INSERT INTO owns values('$_POST[email]','$id');
+        BEGIN; 
+        INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]'); 
+        INSERT INTO owns values('$_POST[email]','$id'); 
         COMMIT;");
         if (!$result) {
             $failedresult = pg_send_query($db, "
-            BEGIN;
-            INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]');
-            INSERT INTO owns values('$_POST[email]','$id');
+            BEGIN; 
+            INSERT INTO cars Values('$id','$_POST[carlicense]','$_POST[cartype]'); 
+            INSERT INTO owns values('$_POST[email]','$id'); 
             COMMIT;");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -466,7 +466,7 @@
 
   <!-- Delete -->
   <h4>Delete Car</h4>
-
+  
   <!-- Deletion Form -->
   <form name="formDeleteCar" id="formDeleteCar" action="" method="POST">
       <select class="form-control form-control-sm" name='lcToDelete' id = 'lcToDelete' >
@@ -488,12 +488,12 @@
 
   <!-- PHP Delete Logic -->
   <?php
-
+    
     /*Admin*/
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
@@ -538,7 +538,7 @@
 
   <!-- Modify -->
   <h4>Modify Car</h4>
-
+  
   <!-- Modify Form -->
   <form name="formModifyCar" id="formModifyCar" action="" method="POST">
       <select class="form-control form-control-sm" name='lcToModify' id = 'lcToModify' >
@@ -547,7 +547,7 @@
         // This is the db to connect to
         include 'phpconfig.php';
         $db     = $psql;
-        $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype
+        $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
           FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
 
         while ($row = pg_fetch_array($result)) {
@@ -558,14 +558,14 @@
       <input type="submit" class="btn btn-primary" value="Modify" name="submitCarModify"><br>
   </form>
 
-  <!-- Modify PHP Logic -->
+  <!-- Modify PHP Logic -->  
   <?php
     include 'phpconfig.php';
     session_start();
     $db = $psql;
-    $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype
+    $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
           FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid WHERE licenseplate = '$_POST[lcToModify]';");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);	  
     $old_licenseplate = $_POST[lcToModify];
 
     if (isset($_POST['submitCarModify'])) {
@@ -587,19 +587,19 @@
     // PHP Logic to do an Update Query on SQL
     if (isset($_POST['newCar'])) {  // Submit the update SQL command
       $result = pg_query($db, "
-                                UPDATE cars
+                                UPDATE cars 
                                 SET carid = '$_POST[carsid_updated]',
-                                    licenseplate = '$_POST[lc_updated]',
-                                    cartype = '$_POST[cartype_updated]'
+                                    licenseplate = '$_POST[lc_updated]', 
+                                    cartype = '$_POST[cartype_updated]' 
                                 WHERE licenseplate = '$_POST[lc_old]';"
       );
       if (!$result) {
           $failedresult = pg_send_query($db,"
-                                UPDATE cars
+                                UPDATE cars 
                                 SET carid = '$_POST[carsid_updated]',
-                                    licenseplate = '$_POST[lc_updated]',
-                                    cartype = '$_POST[cartype_updated]'
-                                WHERE licenseplate = '$_POST[lc_old]';"
+                                    licenseplate = '$_POST[lc_updated]', 
+                                    cartype = '$_POST[cartype_updated]' 
+                                WHERE licenseplate = '$_POST[lc_old]';"                                    
           );
           echo pg_result_error(pg_get_result($db));
           echo "Modify failed!!";
@@ -626,12 +626,12 @@
 
           header("Refresh:0");
       }
-    }
+    }   
   ?>
 
   <!-- Modify -->
   <h4>Transfer Ownership</h4>
-
+  
   <!-- Modify Form -->
   <form name="formTransferCar" id="formTransferCar" action="" method="POST">
       <select class="form-control form-control-sm" name='lcToTransfer' id = 'lcTransfer' >
@@ -640,7 +640,7 @@
         // This is the db to connect to
         include 'phpconfig.php';
         $db     = $psql;
-        $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype
+        $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
           FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid;");
 
         while ($row = pg_fetch_array($result)) {
@@ -651,14 +651,14 @@
       <input type="submit" class="btn btn-primary" value="Transfer" name="submitCarTransfer"><br>
   </form>
 
-  <!-- Modify PHP Logic -->
+  <!-- Modify PHP Logic -->  
   <?php
 
     /*Admin*/
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
@@ -667,9 +667,9 @@
     include 'phpconfig.php';
     session_start();
     $db = $psql;
-    $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype
+    $result = pg_query($db, "SELECT emails AS carowner, carsid, licenseplate, cartype 
           FROM Cars C INNER JOIN OWNS O ON C.carid = O.carsid WHERE licenseplate = '$_POST[lcToTransfer]';");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);	  
     $old_licenseplate = $_POST[lcToTransfer];
 
     if (isset($_POST['submitCarTransfer'])) {
@@ -688,17 +688,17 @@
     // PHP Logic to do an Update Query on SQL
     if (isset($_POST['changeOwner'])) {  // Submit the update SQL command
       $result = pg_query($db, "
-                                UPDATE owns
+                                UPDATE owns 
                                 SET emails = '$_POST[carowner_updated]',
                                     carsid = '$_POST[carsid_same]'
                                 WHERE emails = '$_POST[carowner_old]';"
       );
       if (!$result) {
           $failedresult = pg_send_query($db,"
-                                UPDATE owns
+                                UPDATE owns 
                                 SET emails = '$_POST[carowner_updated]',
                                     carsid = '$_POST[carsid_same]'
-                                WHERE emails = '$_POST[carowner_old]';"
+                                WHERE emails = '$_POST[carowner_old]';"                                
           );
           echo pg_result_error(pg_get_result($db));
           echo "Modify failed!!";
@@ -726,7 +726,7 @@
 
           header("Refresh:0");
       }
-    }
+    }   
   ?>
 
   <!-- Modify -->
@@ -739,30 +739,30 @@
           <input type="submit" class="btn btn-primary" value="Transfer" name="changeCar"><br>
       </div>
     </form>
-
+  
     <?php
     /*Admin*/
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
     // PHP Logic to do an Update Query on SQL
     if (isset($_POST['changeCar'])) {  // Submit the update SQL command
       $result = pg_query($db, "
-                                UPDATE owns
+                                UPDATE owns 
                                 SET emails = '$_POST[carowner_same]',
                                     carsid = '$_POST[carsid_new]'
                                 WHERE carsid = '$_POST[carsid_old]';"
       );
       if (!$result) {
           $failedresult = pg_send_query($db,"
-                                UPDATE owns
+                                UPDATE owns 
                                 SET emails = '$_POST[carowner_same]',
                                     carsid = '$_POST[carsid_new]'
-                                WHERE carsid = '$_POST[carsid_old]';"
+                                WHERE carsid = '$_POST[carsid_old]';"                             
           );
           echo pg_result_error(pg_get_result($db));
           echo "Modify failed!!";
@@ -789,24 +789,24 @@
 
           header("Refresh:0");
       }
-    }
+    }   
     ?>
 
   </div>
 
-   <div>
+   <div> 
     <br><h2 style="text-align: center">All Rides</h2><br>
-    <h6 style="font-style: italic; text-align: center">With corresponding driver and car info. Sorted by rideid</h6>
+    <h6 style="font-style: italic; text-align: center">With corresponding driver and car info. Sorted by rideid</h6>    
     <?php
       include 'phpconfig.php';
       session_start();
       $adminname = $_SESSION['sessionID'];
       $db     = $psql;
-      $result = pg_query($db,
-      "SELECT D.ridesid, D.email, D.carid, D.datess, D.timess,
+      $result = pg_query($db, 
+      "SELECT D.ridesid, D.email, D.carid, D.datess, D.timess, 
       R.origin, R.destination, R.baseprice, R.capacity, R.sidenote
-      FROM drives D INNER JOIN rides R
-        ON (D.ridesid = R.rideid
+      FROM drives D INNER JOIN rides R 
+        ON (D.ridesid = R.rideid 
           AND D.datess = R.dates
           AND D.timess = R.times)
       ORDER BY D.ridesid");
@@ -842,7 +842,7 @@
       echo '</table>';
 
     ?>
-
+  
   </div>
 
 <!-- Insert -->
@@ -870,7 +870,7 @@
 session_start();
 $adminname = $_SESSION['sessionID'];
 $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-$row    = pg_fetch_assoc($result);
+$row    = pg_fetch_assoc($result);  
 $adminid = $row[adminid];
 /*endAdmin*/
 
@@ -902,7 +902,7 @@ if (isset($_POST['insertRide'])) {
                 echo "Creating ride failed!!";
             } else {
                 echo "Created ride successfully!";
-
+                
                 /*Admin*/
                 echo '<br>Modified as '.$adminid." ";
                 $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
@@ -929,7 +929,7 @@ if (isset($_POST['insertRide'])) {
 
   <!-- Delete -->
   <h4>Delete Ride</h4>
-
+  
   <!-- Deletion Form -->
   <form name="formDeleteRide" id="formDeleteRide" action="" method="POST">
       <select class="form-control form-control-sm" name='rideToDelete' id = 'rideToDelete' >
@@ -956,7 +956,7 @@ if (isset($_POST['insertRide'])) {
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
@@ -996,7 +996,7 @@ if (isset($_POST['insertRide'])) {
 
 <!-- Modify -->
 <h4>Modify Ride</h4>
-
+  
   <!-- Modify Form -->
   <form name="formModifyRide" id="formModifyRide" action="" method="POST">
       <select class="form-control form-control-sm" name='idToModify' id = 'idToModify' >
@@ -1015,14 +1015,14 @@ if (isset($_POST['insertRide'])) {
       <input type="submit" class="btn btn-primary" value="Modify" name="submitRideModify"><br>
   </form>
 
-  <!-- Modify PHP Logic -->
+  <!-- Modify PHP Logic -->  
   <?php
 
     /*Admin*/
     session_start();
     $adminname = $_SESSION['sessionID'];
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-    $row    = pg_fetch_assoc($result);
+    $row    = pg_fetch_assoc($result);  
     $adminid = $row[adminid];
     /*endAdmin*/
 
@@ -1030,8 +1030,8 @@ if (isset($_POST['insertRide'])) {
     include 'phpconfig.php';
     session_start();
     $db = $psql;
-    $result = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[idToModify]'");
-    $row    = pg_fetch_assoc($result);
+    $result = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[idToModify]'");	
+    $row    = pg_fetch_assoc($result);	  
       // Display form to modify info
 
       if (isset($_POST['submitRideModify'])) {
@@ -1053,24 +1053,24 @@ if (isset($_POST['insertRide'])) {
 
     if (isset($_POST['modifyRide'])) {  // Submit the update SQL command
       $_POST[sn_updated] = !empty($_POST[sn_updated]) ? "'$_POST[sn_updated]'" : 'null';
-      $result = pg_query($db, "UPDATE rides
+      $result = pg_query($db, "UPDATE rides 
                                 SET dates = '$_POST[date_updated]',
                                     times = '$_POST[time_updated]',
                                     origin = '$_POST[org_updated]',
                                     destination = '$_POST[dst_updated]',
                                     baseprice = '$_POST[bp_updated]',
                                     capacity = '$_POST[cap_updated]',
-                                    sidenote = $_POST[sn_updated]
+                                    sidenote = $_POST[sn_updated] 
                                     WHERE rideid = '$_POST[id_same]'");
       if (!$result) {
-          $failedresult = pg_send_query($db,  "UPDATE rides
+          $failedresult = pg_send_query($db,  "UPDATE rides 
                                                 SET dates = '$_POST[date_updated]',
                                                     times = '$_POST[time_updated]',
                                                     origin = '$_POST[org_updated]',
                                                     destination = '$_POST[dst_updated]',
                                                     baseprice = '$_POST[bp_updated]',
                                                     capacity = '$_POST[cap_updated]',
-                                                    sidenote = $_POST[sn_updated]
+                                                    sidenote = $_POST[sn_updated] 
                                                     WHERE rideid = '$_POST[id_same]'");
           echo pg_result_error(pg_get_result($db));
           echo "<br>";
@@ -1096,21 +1096,21 @@ if (isset($_POST['insertRide'])) {
           }
           /*Admin*/
 
-
+          
           header("Refresh:0");
       }
-    }
+    }   
   ?>
 
 <div>
     <br><h2 style="text-align: center">All Bids</h2><br>
-    <h6 style="font-style: italic; text-align: center">Just bid info with emails and ridesid referencing to Users and Rides</h6>
+    <h6 style="font-style: italic; text-align: center">Just bid info with emails and ridesid referencing to Users and Rides</h6>    
     <?php
     include 'phpconfig.php';
     session_start();
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db,
+    $result = pg_query($db, 
     "SELECT * FROM bids ORDER BY emails;");
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
@@ -1176,7 +1176,7 @@ if (isset($_POST['insertRide'])) {
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);
+        $row    = pg_fetch_assoc($result);  
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -1213,7 +1213,7 @@ if (isset($_POST['insertRide'])) {
         if (isset($_POST['new'])) {	// Submit the update SQL command, update if user has already bid for ride, else insert.
           if($_POST[bid] >= $_POST[baseprice]) {
             $email = $_POST[email];
-            $sidenote = ($_POST[sidenote] == "") ? null : '$_POST[sidenote]';
+            $sidenote = ($_POST[sidenote] == "") ? "null" : '$_POST[sidenote]';
             $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = $sidenote WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
               INSERT INTO bids
               SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, $sidenote
@@ -1246,7 +1246,7 @@ if (isset($_POST['insertRide'])) {
             }
           }
         ?>
-
+    
     <!-- Delete -->
     <h4>Delete Bid</h4>
 
@@ -1279,7 +1279,7 @@ if (isset($_POST['insertRide'])) {
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);
+        $row    = pg_fetch_assoc($result);  
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -1350,7 +1350,7 @@ if (isset($_POST['insertRide'])) {
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);
+        $row    = pg_fetch_assoc($result);  
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -1358,10 +1358,10 @@ if (isset($_POST['insertRide'])) {
 
         if (isset($_POST['submitBidToModify'])) {
           $result = pg_query($db, "SELECT * FROM bids where emails = '$_POST[email]' AND ridesid = '$_POST[rideid]';");
-          $row    = pg_fetch_assoc($result);
+          $row    = pg_fetch_assoc($result);  
 
           $a = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");   // Query template
-          $b    = pg_fetch_assoc($a);
+          $b    = pg_fetch_assoc($a); 
 
            if ($row[status] == 1) {
                 $status1 = 'Accepted';
@@ -1369,7 +1369,7 @@ if (isset($_POST['insertRide'])) {
             } else if($row[status] == 0) {
                  $status1 = 'Pending';
                  $status2 = 'Accepted';
-            }
+            } 
 
            echo "
                   <ul>
@@ -1386,14 +1386,14 @@ if (isset($_POST['insertRide'])) {
 
               }
 
-                     if (isset($_POST['biddingModification'])) {
+                     if (isset($_POST['biddingModification'])) { 
                        $state = ($_POST[status_updated] == 'Accepted') ? 1 : 0;
                         echo $_POST[status_updated];
 
                         if($state == 1){ $status = 1; }else{ $status = 0; }
 
-                         $sidenote = ($_POST[sidenote_updated] == "") ? null : "'$_POST[sidenote_updated]'";
-                         if($_POST[price_updated] < $b[baseprice]){
+                         $sidenote = ($_POST[sidenote_updated] == "") ? "null" : "'$_POST[sidenote_updated]'";
+                         if($_POST[price_updated] < $b[baseprice]){ 
 
                           echo "Bid was below base price";
 
@@ -1440,10 +1440,10 @@ if (isset($_POST['insertRide'])) {
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
     $result = pg_query($db, "
-    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice,
+    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice, 
     B.status, B.sidenote AS BidderSidenote,
     R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
-    R.sidenote AS RideSideNote
+    R.sidenote AS RideSideNote 
     FROM rides R INNER JOIN bids B on (R.rideid = B.ridesid)
     ORDER BY B.emails
     ;");
@@ -1496,8 +1496,8 @@ if (isset($_POST['insertRide'])) {
       GROUP By ridesid, status
       )
 
-      SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
-        coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid,
+      SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, 
+        coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, 
         R.sidenote
       FROM rides R FULL OUTER JOIN bidcount B ON (R.rideid = B.ridesid)
       ORDER BY R.rideid, R.dates, R.times, R.origin, R.destination, minbid
@@ -1542,7 +1542,7 @@ if (isset($_POST['insertRide'])) {
     session_start();
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db,
+    $result = pg_query($db, 
     "SELECT * FROM admins;");
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
@@ -1584,7 +1584,7 @@ if (isset($_POST['insertRide'])) {
     session_start();
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db,
+    $result = pg_query($db, 
     "SELECT * FROM manages;");
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
@@ -1619,5 +1619,5 @@ if (isset($_POST['insertRide'])) {
     ?>
   </div>
 
-
+  
 </html>
