@@ -26,7 +26,12 @@
     <a class="navbar-brand mx-auto" href="index.php">
       Snatch
     </a>
+    <a class="button" href="profile.php">
+      Back to Profile
+    </a>
+
   </nav>
+
 
   <div>
 
@@ -74,10 +79,16 @@
     bidcountmin as (
       SELECT ridesid, status, price as minprice, numbids
       FROM bidcount inner join minbidtable on rideid = ridesid
+    ),
+
+    ridesexceptown as (
+      Select rideid, dates, times, origin, destination, baseprice, capacity, sidenote
+      FROM rides inner join drives on rideid = ridesid
+      WHERE email <> '$email'
     )
 
     SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, R.sidenote
-    FROM rides R full outer join bidcountmin B on (R.rideid = B.ridesid)
+    FROM ridesexceptown R inner join bidcountmin B on (R.rideid = B.ridesid)
     Order by R.dates, R.times, R.origin, R.destination, minbid
     ;
 
