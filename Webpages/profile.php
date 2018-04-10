@@ -97,8 +97,17 @@
              echo $b[driverLicense];
             if(is_null($b[driverlicense])){ 
               //get carid 
-              $result = pg_query($db, "DELETE FROM owns where emails = '$email';");
-              echo " HEELLO";
+              $carsown = pg_query($db, "SELECT carsid FROM owns where emails = '$email';");
+              //$result = pg_query($db, "DELETE FROM owns where emails = '$email';");
+              while($car = pg_fetch_assoc($carsown)){ 
+                $allrides = pg_query($db, "SELECT ridesid from drives where carid = '$car[carsid]';");
+                $result = pg_query($db, "DELETE from cars where carid = '$car[carsid]';");
+                while ($ride = pg_fetch_assoc($allrides)) {
+                    $result = pg_query($db, "DELETE from rides where rideid = '$ride[ridesid]';");
+                  }
+
+              }
+              
              
             }
 
@@ -139,7 +148,12 @@
             array_push($cars,$row[carid]) ;
             if (isset($_POST['remove'.$numcar])) {
                 $num = $cars[$numcar-1];
+            $allrides = pg_query($db, "SELECT ridesid from drives where carid = '$num';");
             $result = pg_query($db, "DELETE from cars where carid = '$num';");
+            while ($ride = pg_fetch_assoc($allrides)) {
+              $result = pg_query("DELETE from rides where rideid = '$ride[ridesid]';");
+            }
+
             if (!$result) {
                 echo "remove failed!!".$cars[$numcar-1];
             } else {
@@ -215,7 +229,7 @@
                 $note = $mybid[sidenote];
               }
 
-
+          if($row[expiry] == 1){
             echo '<ul>
             <strong>Ride '.$numcar.'</strong> </br>
             <strong>Driver Name: '.$driverdetails[username].'</strong> </br>
@@ -251,15 +265,15 @@
                 }
             }
              if (isset($_POST['editbid'.$numcar])) {
-              echo "<ul><form name='update' action='profile.php'  method='POST'>
+              echo "<ul><form name='update' method='POST'>
             <strong>New Bid: </strong> <input type='integer' name='bid_updated' value='$mybid[price]'/> </br>
-            <strong>Comments: </strong> <input type='text' name='sidenote' value= '$note'/> </br>";
+            <strong>Comments: </strong> <input type='text' name='sidenote_updated' value= '$mybid[sidenote]'/> </br>";
              echo '<li><input type="submit" name= "bid-edit'.$numcar.'" value= "Update"/></li>
             </form></ul>';
               }
 
          if (isset($_POST['bid-edit'.$numcar])) {  // Submit the update SQL command
-            $sidenote = ($note == "") ? "null" : "'$_POST[sidenote]'";
+            $sidenote = ($_POST[sidenote_updated] == "") ? 'null' : "'$_POST[sidenote_updated]'";
             $num = $bids[$numcar-1];
             if($_POST[bid_updated] < $row[baseprice]){ 
 
@@ -267,6 +281,7 @@
 
           }else{
             $result = pg_query($db, "UPDATE bids SET price = '$_POST[bid_updated]', sidenote = $sidenote WHERE ridesid = '$num' AND emails = '$email'");
+            echo $sidenote;
             if (!$result) {
                 $failedresult = pg_send_query($db, "UPDATE bids SET price = '$_POST[bid_updated]', sidenote = $sidenote WHERE ridesid = '$num' AND emails = '$email'");
 
@@ -281,7 +296,23 @@
              $numcar+=1;
 
         }
+      }
     ?>
+    <h2> My Total Expenditure </h2>
+       <?php
+          include 'phpconfig.php';
+          // Connect to the database. Please change the password in the following line accordingly
+          session_start();
+          $email = $_SESSION['userID'];
+          $sum = 0; 
+
+          $db     = $psql;
+          $result = pg_query($db, "select sum(price) from rides inner join bids on ridesid = rideid where status = 1 and expiry = -1 and emails= '$email' group by emails;");
+
+          $row = pg_fetch_assoc($result);
+          echo '<strong>Total rides expenditure: $'.$row[sum].'</strong> </br>'
+
+        ?>
     </div>
     <div class = "center">
     <button type="button"><a href="bid.php" style="text-decoration:none;">Bid for A Ride!</button>
