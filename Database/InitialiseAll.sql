@@ -98,6 +98,7 @@ CREATE TABLE bids (
 
 -- Administrator manages entities
 CREATE TABLE manages (
+    num INTEGER PRIMARY KEY, 
     adminsid VARCHAR(100) not null,
     managetype VARCHAR(6) not null,
     typeid VARCHAR(100) not null,
@@ -213,4 +214,4 @@ values('alex@gmail.com', 45678123, 15, 0, null);
 
 -- Administrator manages entities
 INSERT INTO manages
-values(1234, 'Rides', '34567812', 'Modify comments');
+values(1, 1234, 'Rides', '34567812', 'Modify comments');
