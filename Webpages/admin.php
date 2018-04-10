@@ -170,7 +170,7 @@
   <div>
 
   <!-- Delete -->
-  <h4>Delete User 1</h4>
+  <h4>Delete User</h4>
   
   <!-- Deletion Form -->
   <form name="formDeleteUser" id="formDeleteUser" action="" method="POST">
@@ -797,6 +797,7 @@
    <div> 
     <br><h2 style="text-align: center">All Rides</h2><br>
     <h6 style="font-style: italic; text-align: center">With corresponding driver and car info. Sorted by rideid</h6>    
+    <h6 style="font-style: italic; text-align: center">Expiry: 1 (ongoing), -1 (completed)</h6>   
     <?php
       include 'phpconfig.php';
       session_start();
@@ -804,7 +805,7 @@
       $db     = $psql;
       $result = pg_query($db, 
       "SELECT D.ridesid, D.email, D.carid, D.datess, D.timess, 
-      R.origin, R.destination, R.baseprice, R.capacity, R.sidenote
+      R.origin, R.destination, R.baseprice, R.capacity, R.sidenote, R.expiry
       FROM drives D INNER JOIN rides R 
         ON (D.ridesid = R.rideid 
           AND D.datess = R.dates
@@ -1103,15 +1104,23 @@ if (isset($_POST['insertRide'])) {
   ?>
 
 <div>
-    <br><h2 style="text-align: center">All Bids</h2><br>
-    <h6 style="font-style: italic; text-align: center">Just bid info with emails and ridesid referencing to Users and Rides</h6>    
+    <h2 style="text-align: center">All Bids</h2><br>
+    <h6 style="font-style: italic; text-align: center">With corresponding ride info. Sorted by email</h6>
+    <h6 style="font-style: italic; text-align: center">Status: 0 (failed), 1 (success)</h6>   
     <?php
     include 'phpconfig.php';
     session_start();
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
-    $result = pg_query($db, 
-    "SELECT * FROM bids ORDER BY emails;");
+    $result = pg_query($db, "
+    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice, 
+    B.status, B.sidenote AS BidderSidenote,
+    R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
+    R.sidenote AS RideSideNote 
+    FROM rides R INNER JOIN bids B on (R.rideid = B.ridesid)
+    ORDER BY B.emails
+    ;");
+    // print out table of bids
     $i = 0;
     echo '<table id = "myTable" class= "table"><tr>';
     while ($i < pg_num_fields($result))
@@ -1143,6 +1152,8 @@ if (isset($_POST['insertRide'])) {
     echo '</table>';
 
     ?>
+  </div>
+  <div>
 
     <!-- Insert -->
     <h4>Insert Bid</h4>
@@ -1409,11 +1420,11 @@ if (isset($_POST['insertRide'])) {
                                /*Admin*/
                               echo '<br>Modified as '.$adminid." ";
                               $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                        VALUES ('$adminid', 'User', '$_POST[email]', 'Modify Bid')
+                                                        VALUES ('$adminid', 'User', '$_POST[rideremail]', 'Modify Bid')
                                                 ");
                               if (!$result) {
                                 $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                                      VALUES ('$adminid', 'User', '$_POST[email], 'Modify Bid')
+                                                                      VALUES ('$adminid', 'User', '$_POST[rideremail], 'Modify Bid')
                                                               ");
                                 echo pg_result_error(pg_get_result($db));
                                 echo "<br>";
@@ -1431,55 +1442,7 @@ if (isset($_POST['insertRide'])) {
 
 </div>
 
-<div>
-    <h2 style="text-align: center">All Bids</h2><br>
-    <h6 style="font-style: italic; text-align: center">With corresponding ride info. Sorted by email</h6>
-    <?php
-    include 'phpconfig.php';
-    session_start();
-    $adminname = $_SESSION['sessionID'];
-    $db     = $psql;
-    $result = pg_query($db, "
-    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice, 
-    B.status, B.sidenote AS BidderSidenote,
-    R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
-    R.sidenote AS RideSideNote 
-    FROM rides R INNER JOIN bids B on (R.rideid = B.ridesid)
-    ORDER BY B.emails
-    ;");
-    // print out table of bids
-    $i = 0;
-    echo '<table id = "myTable" class= "table"><tr>';
-    while ($i < pg_num_fields($result))
-    {
-      $fieldName = pg_field_name($result, $i);
-      echo '<td>' . $fieldName . '</td>';
-      $i = $i + 1;
-    }
-    echo '</tr>';
-    $i = 0;
 
-    while ($row = pg_fetch_row($result))
-    {
-      echo '<tr>';
-      $count = count($row);
-      $y = 0;
-      while ($y < $count)
-      {
-        $c_row = current($row);
-        echo '<td>' . $c_row . '</td>';
-        next($row);
-        $y = $y + 1;
-      }
-      echo '</tr>';
-      $i = $i + 1;
-    }
-    pg_free_result($result);
-
-    echo '</table>';
-
-    ?>
-  </div>
 
   <div>
     <br><h2 style="text-align: center">All Rides</h2><br>
