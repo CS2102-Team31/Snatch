@@ -30,11 +30,11 @@
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
     $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");    // need to replace the uid accordingly
-    $row    = pg_fetch_assoc($result);  
-  
+    $row    = pg_fetch_assoc($result);
+
     echo '<br><h1 style="text-align: center">Hello '.$row[adminname].', '.$row[employeename].'</h1><br>';
   ?>
-  
+
   </div>
 
   <div>
@@ -46,10 +46,10 @@
     $adminname = $_SESSION['sessionID'];
     $db     = $psql;
     $result = pg_query($db, "
-    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice, 
+    SELECT B.emails AS UserEmail, R.rideid, B.price AS biddingprice,
     B.status, B.sidenote AS BidderSidenote,
     R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity,
-    R.sidenote AS RideSideNote 
+    R.sidenote AS RideSideNote
     FROM rides R INNER JOIN bids B on (R.rideid = B.ridesid)
     ORDER BY B.emails
     ;");
@@ -118,7 +118,7 @@
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);  
+        $row    = pg_fetch_assoc($result);
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -155,7 +155,7 @@
         if (isset($_POST['new'])) { // Submit the update SQL command, update if user has already bid for ride, else insert.
           if($_POST[bid] >= $_POST[baseprice]) {
             $email = $_POST[email];
-            $sidenote = ($_POST[sidenote] == "") ? "null" : '$_POST[sidenote]';
+            $sidenote = ($_POST[sidenote] == "") ? null : '$_POST[sidenote]';
             $result = pg_query($db, " UPDATE bids SET price = '$_POST[bid]', sidenote = $sidenote WHERE emails = '$email' and ridesid = '$_POST[rideid]' ;
               INSERT INTO bids
               SELECT '$email', '$_POST[rideid]', '$_POST[bid]', 0, $sidenote
@@ -220,7 +220,7 @@
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);  
+        $row    = pg_fetch_assoc($result);
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -291,7 +291,7 @@
         session_start();
         $adminname = $_SESSION['sessionID'];
         $result = pg_query($db, "SELECT * FROM admins where adminname = '$adminname'");
-        $row    = pg_fetch_assoc($result);  
+        $row    = pg_fetch_assoc($result);
         $adminid = $row[adminid];
         /*endAdmin*/
 
@@ -299,10 +299,10 @@
 
         if (isset($_POST['submitBidToModify'])) {
           $result = pg_query($db, "SELECT * FROM bids where emails = '$_POST[email]' AND ridesid = '$_POST[rideid]';");
-          $row    = pg_fetch_assoc($result);  
+          $row    = pg_fetch_assoc($result);
 
           $a = pg_query($db, "SELECT * FROM rides where rideid = '$_POST[rideid]'");   // Query template
-          $b    = pg_fetch_assoc($a); 
+          $b    = pg_fetch_assoc($a);
 
            if ($row[status] == 1) {
                 $status1 = 'Accepted';
@@ -310,7 +310,7 @@
             } else if($row[status] == 0) {
                  $status1 = 'Pending';
                  $status2 = 'Accepted';
-            } 
+            }
 
            echo "
                   <ul>
@@ -327,14 +327,14 @@
 
               }
 
-                     if (isset($_POST['biddingModification'])) { 
+                     if (isset($_POST['biddingModification'])) {
                        $state = ($_POST[status_updated] == 'Accepted') ? 1 : 0;
                         echo $_POST[status_updated];
 
                         if($state == 1){ $status = 1; }else{ $status = 0; }
 
-                         $sidenote = ($_POST[sidenote_updated] == "") ? "null" : "'$_POST[sidenote_updated]'";
-                         if($_POST[price_updated] < $b[baseprice]){ 
+                         $sidenote = ($_POST[sidenote_updated] == "") ? null : "'$_POST[sidenote_updated]'";
+                         if($_POST[price_updated] < $b[baseprice]){
 
                           echo "Bid was below base price";
 
