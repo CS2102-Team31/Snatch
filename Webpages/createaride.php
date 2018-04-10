@@ -398,6 +398,9 @@
   ?>
 </div>
 </div>
-
+<div class = "center">
+    <button type="button" ><a href="profile.php" style="text-decoration:none;">Back to HomePage!</button>
+    <button type="button"><a href="bid.php" style="text-decoration:none;">Bid for A Ride!</button>
+</div>
 </body>
 </html>
