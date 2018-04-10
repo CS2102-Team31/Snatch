@@ -148,12 +148,16 @@
         echo "Insert successful! Refresh to see changes";
         /*Admin*/
         echo '<br>Modified as '.$adminid." ";
-        $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                  VALUES ('$adminid', 'User', '$_POST[email]', 'Insert')
+        $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+        $row    = pg_fetch_assoc($resultcount);
+        $count = $row[count] + 1;  
+
+        $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                  VALUES ($count, '$adminid', 'User', '$_POST[email]', 'Insert')
                           ");
         if (!$result) {
-          $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                VALUES ('$adminid', 'User', '$_POST[email], 'Insert')
+          $failedresult = pg_send_query($db,  "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                                VALUES ($count, '$adminid', 'User', '$_POST[email], 'Insert')
                                         ");
           echo pg_result_error(pg_get_result($db));
           echo "<br>";
@@ -325,12 +329,16 @@
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'User', '$_POST[email_updated]', 'Modify')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;  
+  
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'User', '$_POST[email_updated]', 'Modify')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db,   "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'User', '$_POST[email_updated]', 'Modify')
+            $failedresult = pg_send_query($db,   "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'User', '$_POST[email_updated]', 'Modify')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -442,12 +450,16 @@
 
             /*Admin*/
             echo '<br>Modified as '.$adminid." ";
-            $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                      VALUES ('$adminid', 'Car', '$_POST[carlicense]', 'Insert')
+            $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+            $row    = pg_fetch_assoc($resultcount);
+            $count = $row[count] + 1;      
+
+            $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                      VALUES ($count, '$adminid', 'Car', '$_POST[carlicense]', 'Insert')
                               ");
             if (!$result) {
-              $failedresult = pg_send_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-              VALUES ('$adminid', 'Car', '$_POST[carlicense]', 'Insert')
+              $failedresult = pg_send_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+              VALUES ($count, '$adminid', 'Car', '$_POST[carlicense]', 'Insert')
               ");
               echo pg_result_error(pg_get_result($db));
               echo "<br>";
@@ -511,12 +523,16 @@
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Car', '$_POST[lcToDelete]', 'Delete')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;  
+  
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Car', '$_POST[lcToDelete]', 'Delete')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Car', '$_POST[lcToDelete]', 'Delete')
+            $failedresult = pg_send_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Car', '$_POST[lcToDelete]', 'Delete')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -608,12 +624,16 @@
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Car', '$_POST[lc_updated]', 'Modify')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;   
+
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Car', '$_POST[lc_updated]', 'Modify')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Car', '$_POST[lc_updated]', 'Modify')
+            $failedresult = pg_send_query($db,  "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Car', '$_POST[lc_updated]', 'Modify')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -707,12 +727,16 @@
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Car', '$_POST[carsid_same]', 'Change Ownership')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;    
+
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Car', '$_POST[carsid_same]', 'Change Ownership')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db,   "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Car', '$_POST[carsid_same]', 'Change Ownership')
+            $failedresult = pg_send_query($db,   "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Car', '$_POST[carsid_same]', 'Change Ownership')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -771,12 +795,16 @@
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Car', '$_POST[carsid_new]', 'Same owner modified owned car')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;    
+
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Car', '$_POST[carsid_new]', 'Same owner modified owned car')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db,   "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Car', '$_POST[carsid_new]', 'Same owner modified owned car')
+            $failedresult = pg_send_query($db,   "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Car', '$_POST[carsid_new]', 'Same owner modified owned car')
              ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -906,12 +934,16 @@ if (isset($_POST['insertRide'])) {
                 
                 /*Admin*/
                 echo '<br>Modified as '.$adminid." ";
-                $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                          VALUES ('$adminid', 'Rides', '$rideid', 'Insert Ride')
+                $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+                $row    = pg_fetch_assoc($resultcount);
+                $count = $row[count] + 1;          
+
+                $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                          VALUES ($count, '$adminid', 'Rides', '$rideid', 'Insert Ride')
                                   ");
                 if (!$result) {
-                  $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-                  VALUES ('$adminid', 'Rides', '$rideid', 'Insert Ride')
+                  $failedresult = pg_send_query($db,  "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                  VALUES ($count, '$adminid', 'Rides', '$rideid', 'Insert Ride')
                   ");
                   echo pg_result_error(pg_get_result($db));
                   echo "<br>";
@@ -973,12 +1005,16 @@ if (isset($_POST['insertRide'])) {
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Rides', '$_POST[rideToDelete]', 'Delete Ride')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;    
+
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Rides', '$_POST[rideToDelete]', 'Delete Ride')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Rides', '$_POST[rideToDelete]', 'Delete Ride')
+            $failedresult = pg_send_query($db,  "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Rides', '$_POST[rideToDelete]', 'Delete Ride')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -1082,12 +1118,16 @@ if (isset($_POST['insertRide'])) {
 
           /*Admin*/
           echo '<br>Modified as '.$adminid." ";
-          $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                    VALUES ('$adminid', 'Rides', '$_POST[id_same]', 'Modify Ride')
+          $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+          $row    = pg_fetch_assoc($resultcount);
+          $count = $row[count] + 1;    
+
+          $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                    VALUES ($count, '$adminid', 'Rides', '$_POST[id_same]', 'Modify Ride')
                             ");
           if (!$result) {
-            $failedresult = pg_send_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-            VALUES ('$adminid', 'Rides', '$_POST[id_same]', 'Modify Ride')
+            $failedresult = pg_send_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+            VALUES ($count, '$adminid', 'Rides', '$_POST[id_same]', 'Modify Ride')
             ");
             echo pg_result_error(pg_get_result($db));
             echo "<br>";
@@ -1236,12 +1276,16 @@ if (isset($_POST['insertRide'])) {
 
                 /*Admin*/
                 echo '<br>Modified as '.$adminid." ";
-                $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                          VALUES ('$adminid', 'Bid', '$_POST[rideid]' , 'Insert')
+                $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+                $row    = pg_fetch_assoc($resultcount);
+                $count = $row[count] + 1;          
+
+                $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                          VALUES ($count, '$adminid', 'Bid', '$_POST[rideid]' , 'Insert')
                                   ");
                 if (!$result) {
-                  $failedresult = pg_send_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                  VALUES ('$adminid', 'Bid', '$_POST[rideid]' , 'Insert')
+                  $failedresult = pg_send_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                  VALUES ($count, '$adminid', 'Bid', '$_POST[rideid]' , 'Insert')
                   ");
                   echo pg_result_error(pg_get_result($db));
                   echo "<br>";
@@ -1308,12 +1352,16 @@ if (isset($_POST['insertRide'])) {
 
               /*Admin*/
               echo '<br>Modified as '.$adminid." ";
-              $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                        VALUES ('$adminid', 'Bids', '$_POST[rideid]', 'Delete')
+              $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+              $row    = pg_fetch_assoc($resultcount);
+              $count = $row[count] + 1;        
+
+              $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                        VALUES ($count, '$adminid', 'Bids', '$_POST[rideid]', 'Delete')
                                 ");
               if (!$result) {
-                $failedresult = pg_send_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                VALUES ('$adminid', 'Bids', '$_POST[rideid]', 'Delete')
+                $failedresult = pg_send_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                VALUES ($count, '$adminid', 'Bids', '$_POST[rideid]', 'Delete')
                 ");
                 echo pg_result_error(pg_get_result($db));
                 echo "<br>";
@@ -1419,12 +1467,16 @@ if (isset($_POST['insertRide'])) {
                               echo "Update successful!";
                                /*Admin*/
                               echo '<br>Modified as '.$adminid." ";
-                              $result = pg_query($db, "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                        VALUES ('$adminid', 'User', '$_POST[rideremail]', 'Modify Bid')
+                              $resultcount = pg_query($db, "SELECT count(*) as count FROM manages;");
+                              $row    = pg_fetch_assoc($resultcount);
+                              $count = $row[count] + 1;                        
+
+                              $result = pg_query($db, "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                                        VALUES ($count, '$adminid', 'User', '$_POST[rideremail]', 'Modify Bid')
                                                 ");
                               if (!$result) {
-                                $failedresult = pg_send_query($db,  "INSERT INTO manages(adminsid, managetype, typeid, history)
-                                                                      VALUES ('$adminid', 'User', '$_POST[rideremail], 'Modify Bid')
+                                $failedresult = pg_send_query($db,  "INSERT INTO manages(num, adminsid, managetype, typeid, history)
+                                                                      VALUES ($count, '$adminid', 'User', '$_POST[rideremail], 'Modify Bid')
                                                               ");
                                 echo pg_result_error(pg_get_result($db));
                                 echo "<br>";
