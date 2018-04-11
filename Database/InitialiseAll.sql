@@ -71,7 +71,7 @@ CREATE TABLE drives (
     carid VARCHAR(100) not null,
     datess DATE not null,
     timess TIME not null,
-    primary key(email, datess, timess, carid),
+    primary key(email, datess, timess),
     foreign key(email, carid) references owns(emails, carsid)
         on UPDATE CASCADE
         on DELETE CASCADE,
@@ -102,7 +102,7 @@ CREATE TABLE manages (
     adminsid VARCHAR(100) not null,
     managetype VARCHAR(6) not null,
     typeid VARCHAR(100) not null,
-    history VARCHAR(32) not null,
+    historys VARCHAR(32) not null,
     foreign key(adminsid) references admins(adminid)
         on UPDATE CASCADE
         on DELETE CASCADE
@@ -130,17 +130,17 @@ values('martin@gmail.com', 'Martin', 912345, 81234568, null, '1997-06-06', 'S123
 
 -- Rides
 INSERT INTO rides
-values(12345678, '2018-02-28', '14:20:20', 'Tampines MRT', 'Changi Airport', 10, 3, 'Only waiting for 10 minutes', 1);
+values(12345678, '2018-05-28', '14:20:20', 'Tampines MRT', 'Changi Airport', 10, 3, 'Only waiting for 10 minutes', 1);
 INSERT INTO rides
-values(23456781, '2018-02-28', '15:20:20', 'Tampines MRT', 'Bishan MRT', 30, 2, null, 1);
+values(23456781, '2018-03-28', '15:20:20', 'Tampines MRT', 'Bishan MRT', 30, 2, null, 1);
 INSERT INTO rides
 values(34567812, '2018-02-28', '09:00:20', 'NUS School of Computing', 'Bishan MRT', 25, 2, null, 1);
 INSERT INTO rides
-values(45678123, '2018-02-28', '09:05:20', 'Botanic Gardens MRT', 'Bishan MRT', 15, 5, null, 1);
+values(45678123, '2018-04-28', '09:05:20', 'Botanic Gardens MRT', 'Bishan MRT', 15, 5, null, 1);
 INSERT INTO rides
-values(56781234, '2018-03-01', '09:30:00', 'Clementi MRT', 'Ang Mo Kio MRT', 24, 3, 'Waiting for 5 minutes', 1);
+values(56781234, '2018-06-01', '09:30:00', 'Clementi MRT', 'Ang Mo Kio MRT', 24, 3, 'Waiting for 5 minutes', 1);
 INSERT INTO rides
-values(67812345, '2018-03-03', '22:05:08', 'Crescent Girls School', 'Orchard MRT', 10, 5, null, 1);
+values(67812345, '2018-01-03', '22:05:08', 'Crescent Girls School', 'Orchard MRT', 10, 5, null, 1);
 
 -- Cars
 INSERT INTO cars
@@ -186,17 +186,17 @@ values('martin@gmail.com', 6712345);
 
 -- User drives rides
 INSERT INTO drives
-values('renee@gmail.com', 12345678, 1234567, '2018-02-28', '14:20:20');
+values('renee@gmail.com', 12345678, 1234567, '2018-05-28', '14:20:20');
 INSERT INTO drives
-values('renee@gmail.com', 23456781, 1234567, '2018-02-28', '15:20:20');
+values('renee@gmail.com', 23456781, 1234567, '2018-03-28', '15:20:20');
 INSERT INTO drives
 values('yilun@gmail.com', 34567812, 2345671, '2018-02-28', '09:00:20');
 INSERT INTO drives
-values('anna@gmail.com', 45678123, 5671234, '2018-02-28', '09:05:20');
+values('anna@gmail.com', 45678123, 5671234, '2018-04-28', '09:05:20');
 INSERT INTO drives
-values('martin@gmail.com', 56781234, 6712345, '2018-03-01', '09:30:00');
+values('martin@gmail.com', 56781234, 6712345, '2018-06-01', '09:30:00');
 INSERT INTO drives
-values('cindy@gmail.com', 67812345, 4567123, '2018-03-03', '22:05:08');
+values('cindy@gmail.com', 67812345, 4567123, '2018-01-03', '22:05:08');
 
 -- User bids for rides
 INSERT INTO bids
@@ -214,5 +214,6 @@ values('alex@gmail.com', 45678123, 15, 0, null);
 
 -- Administrator manages entities
 INSERT INTO manages
-values(1234, 'Rides', '34567812', 'Modify comments');
 values(1, 1234, 'Rides', '34567812', 'Modify comments');
+INSERT INTO manages
+values(2, 1234, 'Rides', '34567812', 'Modify comments');
