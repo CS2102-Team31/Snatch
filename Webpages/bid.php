@@ -83,8 +83,8 @@
 
     ridesexceptown as (
       Select rideid, dates, times, origin, destination, baseprice, capacity, sidenote
-      FROM rides inner join drives on rideid = ridesid AND expiry = 1
-      WHERE email <> '$email'
+      FROM rides inner join drives on rideid = ridesid
+      WHERE email <> '$email' AND expiry = 1
     )
     SELECT *
     FROM (
