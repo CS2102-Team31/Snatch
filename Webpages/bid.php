@@ -83,13 +83,15 @@
 
     ridesexceptown as (
       Select rideid, dates, times, origin, destination, baseprice, capacity, sidenote
-      FROM rides inner join drives on rideid = ridesid
+      FROM rides inner join drives on rideid = ridesid AND expiry = 1
       WHERE email <> '$email'
     )
-
+    SELECT *
+    FROM (
     SELECT R.rideid, R.dates, R.times, R.origin, R.destination, R.baseprice, R.capacity, coalesce(B.numbids,0) as numBids, coalesce(B.minprice, 0) as minBid, R.sidenote
-    FROM ridesexceptown R inner join bidcountmin B on (R.rideid = B.ridesid)
-    Order by R.dates, R.times, R.origin, R.destination, minbid
+    FROM ridesexceptown R full outer join bidcountmin B on (R.rideid = B.ridesid)
+    Order by R.dates, R.times, R.origin, R.destination, minbid) as R
+    WHERE rideid <> 'null'
     ;
 
     ");
@@ -107,7 +109,7 @@
     echo '<td> Base Bidding Price </td>';
     echo '<td> Ride Capacity </td>';
     echo '<td> Number of Bids </td>';
-    echo '<td> Lowest Winning Bid </td>';
+    echo '<td> Current Lowest Bid </td>';
     echo '<td> Side Notes </td>';
 
     echo '</tr>';
