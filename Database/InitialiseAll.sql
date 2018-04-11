@@ -102,7 +102,7 @@ CREATE TABLE manages (
     adminsid VARCHAR(100) not null,
     managetype VARCHAR(6) not null,
     typeid VARCHAR(100) not null,
-    historys VARCHAR(32) not null,
+    history VARCHAR(32) not null,
     foreign key(adminsid) references admins(adminid)
         on UPDATE CASCADE
         on DELETE CASCADE
