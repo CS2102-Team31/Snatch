@@ -8,6 +8,7 @@ DROP TABLE cars;
 DROP TABLE admins;
 
 -- Users
+-- Comment
 CREATE TABLE users (
     email VARCHAR(32) unique,
     username VARCHAR(32) unique not null,
